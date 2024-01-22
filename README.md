@@ -1,4 +1,4 @@
-# Prediction Of Helminths Infection Pipeline (POHI)
+# Prediction Of Helminths Infection (POHI) Pipeline 
 
 This project process accelerometry data and uses machine learning to predict small ruminants(Goats and sheep) health.
 
@@ -6,6 +6,40 @@ This project process accelerometry data and uses machine learning to predict sma
 to replicate the results in our paper run main.py
 
 ## How To Use
+
+1) Clone the repository.
+```bash
+git clone https://github.com/biospi/PredictionOfDHealthInSR
+```
+(Note: this repo include the binary from https://github.com/wyndhurst-track/wynd-vm)
+
+2) Change directory
+```bash
+cd PredictionOfDHealthInSR/
+```
+3) Create python virtual environment 
+```bash
+python3 -m venv goat
+```
+4) Activate the environment
+```bash
+source goat/bin/activate
+```
+5) Install dependencies 
+```bash
+make environment
+```
+6) Activate the environment
+```bash
+source wynd/bin/activate
+```
+
+7) Replicate the paper results
+```bash
+source main.py
+```
+
+
 ```bash
 Usage: ml.py [OPTIONS]
 
@@ -58,7 +92,7 @@ Options:
   --help                          Show this message and exit.
 ```
 
-##Blue Crystal 4
+### Blue Crystal 4
 ```bash
 module load tools/git/2.18.0
 module load languages/anaconda3/3.7
