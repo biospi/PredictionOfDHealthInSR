@@ -3583,7 +3583,7 @@ def plot_ml_report_final_abs(output_dir):
                 yaxis_title="AUC",
             )
             fig_.update_xaxes(tickangle=-45)
-            filepath = output_dir / f"ML_performance_final_auc_{farm}_{h_tag}_abs.html"
+            filepath = output_dir / f"ML_performance_final_auc_{farm}_{h_tag}_delta.html"
             print(filepath)
             fig_.update_layout(barmode="group")
             fig_.update_yaxes(title_text="Delta AUC(%)", secondary_y=True)
