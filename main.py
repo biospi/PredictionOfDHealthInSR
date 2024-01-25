@@ -10,7 +10,7 @@ def main(
     exp_temporal: bool = False,
     exp_cross_farm: bool = False,
     weather_exp: bool = True,
-    output_dir: Path = Path("output"),
+    output_dir: Path = Path("output_0"),
     delmas_dir_mrnn: Path = None,
     cedara_dir_mrnn: Path = None,
     n_job: int = 6,
@@ -33,7 +33,7 @@ def main(
             slug = "_".join(steps)
             for w_day in [84]:
                 for cv in ["RepeatedKFold"]:
-                        n_imputed_days = 7
+                        n_imputed_days = 6
                         n_activity_days = 7
                         main_experiment.main(
                             output_dir=output_dir
@@ -55,8 +55,8 @@ def main(
                             skip=False,
                             weather_file=Path("weather_data/delmas_south_africa_2011-01-01_to_2015-12-31.csv")
                         )
-                        n_imputed_days = 7
-                        n_activity_days = 1
+                        n_imputed_days = 1
+                        n_activity_days = 2
                         main_experiment.main(
                             output_dir=output_dir
                             / "main_experiment"

@@ -2,7 +2,7 @@ import gc
 import warnings
 import pandas as pd
 import numpy as np
-import umap
+#import umap
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 from sklearn.preprocessing import StandardScaler, MinMaxScaler, Normalizer

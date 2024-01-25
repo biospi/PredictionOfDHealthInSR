@@ -568,8 +568,7 @@ def main(
                 clf_name="SVM",
                 output_dim=data_frame.shape[0],
                 n_scales=n_scales,
-                sub_sample_scales=sub_sample_scales,
-                enable_qn_peak_filter=enable_qn_peak_filter,
+                sub_sample_scales=sub_sample_scales
             )
             df_processed_list.append(df_processed)
 

@@ -12,7 +12,8 @@ import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objs as go
-import umap
+
+# import umap
 from matplotlib.colors import LinearSegmentedColormap, LogNorm
 from matplotlib.lines import Line2D
 from plotly.graph_objs.layout.scene import Annotation
@@ -30,7 +31,7 @@ from cwt._cwt import CWT, plot_line, STFT, plot_cwt_power, plot_stft_power, DWT
 from utils.Utils import anscombe, concatenate_images
 from utils._normalisation import CenterScaler
 
-import umap.plot
+# import umap.plot
 import seaborn as sns
 from collections import Counter
 import matplotlib.cm as cm
@@ -38,6 +39,7 @@ from bokeh.plotting import figure, output_file, save
 from highdimensional.decisionboundaryplot import DBPlot
 from natsort import natsorted
 import plotly.express as px
+import scipy
 
 CSS_COLORS = {
     "NONE": "black",
@@ -555,12 +557,18 @@ def formatForBoxPlot(df, best_model):
         test_f1_score1 = stringArrayToArray(row["test_f1_score1"])
         roc_auc_scores = stringArrayToArray(row["roc_auc_scores"])
         if best_model is not None:
-            roc_auc_scores_b = stringArrayToArray(best_model["roc_auc_scores"].values[0])
-            roc_auc_scores = list(np.abs(np.array(roc_auc_scores_b) - np.array(roc_auc_scores))) #get the delta compared to the best model
+            roc_auc_scores_b = stringArrayToArray(
+                best_model["roc_auc_scores"].values[0]
+            )
+            roc_auc_scores = list(
+                np.array(roc_auc_scores) - np.array(roc_auc_scores_b)
+            )  # get the delta compared to the best model
+
         config = [
             row["config"].replace("->", ">").replace(" ", "")
             for _ in range(len(test_balanced_accuracy_score))
         ]
+
         data["test_balanced_accuracy_score"] = test_balanced_accuracy_score
         data["test_precision_score0"] = test_precision_score0
         data["test_precision_score1"] = test_precision_score1
@@ -576,6 +584,12 @@ def formatForBoxPlot(df, best_model):
         data["roc_auc_scores"] = roc_auc_scores
         data["config"] = config
         dfs.append(data)
+
+        if np.sum(roc_auc_scores) != 0:
+            p_value = scipy.stats.wilcoxon(roc_auc_scores).pvalue
+            data["p_value"] = p_value
+        else:
+            data["p_value"] = np.nan
     formated = pd.concat(dfs, axis=0)
     return formated
 
@@ -658,11 +672,13 @@ def get_delta(df):
         df_diff = df_diff.reset_index(drop=True)
         dfs_deltas.append(df_diff)
     df_result = pd.concat(dfs_deltas)
-    df_result = df_result.sort_values('config_s')
+    df_result = df_result.sort_values("config_s")
     return df_result
 
 
-def plot_ml_report_final(output_dir, filter_per_clf=False, filter_for_norm=False): #TODO refactor
+def plot_ml_report_final(
+    output_dir, filter_per_clf=False, filter_for_norm=False
+):  # TODO refactor
     print("building report visualisation...")
     dfs = []
     label_dict = {}
@@ -814,7 +830,7 @@ def plot_ml_report_final(output_dir, filter_per_clf=False, filter_for_norm=False
                 formated_label_s.append(human_readable(label_formated, df_f_, n))
             df_f_["config"] = formated_label
             df_f_["config_s"] = formated_label_s
-            #df_f_ = get_delta(df_f_)
+            # df_f_ = get_delta(df_f_)
             fig.append_trace(
                 px.box(df_f_, x="config_s", y="test_precision_score0").data[0],
                 row=1,
@@ -3357,7 +3373,7 @@ def plot_ml_report_final_abs(output_dir):
                 formated_label_s.append(human_readable(label_formated, df_f_, n))
             df_f_["config"] = formated_label
             df_f_["config_s"] = formated_label_s
-            #df_f_ = get_delta(df_f_)
+            # df_f_ = get_delta(df_f_)
             fig.append_trace(
                 px.box(df_f_, x="config_s", y="test_precision_score0").data[0],
                 row=1,
@@ -3391,7 +3407,7 @@ def plot_ml_report_final_abs(output_dir):
             fig.update_layout(margin=dict(l=20, r=20, t=20, b=500))
             fig_auc_only.update_layout(margin=dict(l=20, r=20, t=20, b=500))
             output_dir.mkdir(parents=True, exist_ok=True)
-            filepath = output_dir / f"ML_performance_final_{farm}_abs.html"
+            filepath = output_dir / f"ML_performance_final_{farm}_delta.html"
             print(filepath)
             fig.write_html(str(filepath))
             # filepath = output_dir / f"ML_performance_final_auc_{farm}_{h_tag}.html"
@@ -3405,14 +3421,12 @@ def plot_ml_report_final_abs(output_dir):
             df_f_["config_s"] = (
                 df_f_["config_s"].str.split(" ").str[0:-1].str.join(" ")
                 + " ("
-                + [
-                    str(mapping[x])
-                    for x in df_f_["config_s"].str.split(" ").str[-1]
-                ]
+                + [str(mapping[x]) for x in df_f_["config_s"].str.split(" ").str[-1]]
                 + ")"
             )
 
             x_data = df_f_["config_s"].unique()
+            p_values = df_f_["p_value"].unique()
 
             color_data = [x.split(" ")[-1] for x in x_data]
             imp_days_data = [x.split(" ")[0].split("=")[1] for x in x_data]
@@ -3428,7 +3442,7 @@ def plot_ml_report_final_abs(output_dir):
                 class0 = df_f_[df_f_["config_s"] == xd]["class0"].unique()
                 class1 = df_f_[df_f_["config_s"] == xd]["class1"].unique()
                 imp_days = df_f_[df_f_["config_s"] == xd]["class1"].unique()
-                xd = " ".join(xd.split(' ')[1:])
+                xd = " ".join(xd.split(" ")[1:])
                 class0_list.append(class0)
                 class1_list.append(class1)
                 keys = np.unique(color_data)
@@ -3443,93 +3457,114 @@ def plot_ml_report_final_abs(output_dir):
 
                 colors.append(color)
                 traces.append(
-                    go.Bar(
-                        y=class0,
-                        x=[xd],
-                        name="Healthy samples",
-                        width=[0.25],
-                        offsetgroup="Healthy samples",
-                        marker=dict(color="#1f77b4"),
-                        opacity=0.2,
-                        showlegend=False,
-                    )
+                    [
+                        np.median(yd),
+                        go.Bar(
+                            y=class0,
+                            x=[xd],
+                            name="Healthy samples",
+                            width=[0.25],
+                            offsetgroup="Healthy samples",
+                            marker=dict(color="#1f77b4"),
+                            opacity=0.2,
+                            showlegend=False,
+                        )
+                    ]
                 )
                 sec_axis.append(False)
                 traces.append(
-                    go.Bar(
-                        y=class1,
-                        x=[xd],
-                        name="Unhealthy samples",
-                        width=[0.25],
-                        offsetgroup="Unhealthy samples",
-                        marker=dict(color="#ff7f0e"),
-                        opacity=0.2,
-                        showlegend=False,
-                    )
+                    [
+                        np.median(yd),
+                        go.Bar(
+                            y=class1,
+                            x=[xd],
+                            name="Unhealthy samples",
+                            width=[0.25],
+                            offsetgroup="Unhealthy samples",
+                            marker=dict(color="#ff7f0e"),
+                            opacity=0.2,
+                            showlegend=False,
+                        )
+                    ]
                 )
                 sec_axis.append(False)
 
                 traces.append(
-                    go.Box(
-                        y=yd,
-                        name=xd,
-                        boxpoints="all",
-                        jitter=0.9,  # Adjust the jitter value to control the spread
-                        pointpos=0,
-                        marker=dict(color=color, size=5, outliercolor="red"),
-                        legendgroup=c,
-                        line_width=1 if float(i_d) < 0 else float(i_d) * 0.5,
-                        showlegend=False,
-                    )
+                    [
+
+                        np.median(yd),
+                        go.Box(
+                            y=yd,
+                            name=xd,
+                            boxpoints="all",
+                            jitter=0.9,  # Adjust the jitter value to control the spread
+                            pointpos=0,
+                            marker=dict(color=color, size=5, outliercolor="red"),
+                            legendgroup=c,
+                            line_width=1 if float(i_d) < 0 else float(i_d) * 0.5,
+                            showlegend=False,
+                        )
+                    ]
                 )
                 sec_axis.append(True)
 
-            for c in np.unique(color_data):
+            for k, c in enumerate(np.unique(color_data)):
                 try:
                     color = COLOR_MAP[c]
                 except KeyError as e:
                     print(e)
                     color = values[0]
 
+                label_ = f"|{c} <i>p_value={p_values[k]:.6f}</i>"
+                if np.isnan(p_values[k]):
+                    label_ = f"|{c}"
                 traces.append(
-                    go.Box(
-                        y=yd,
-                        name={v: k for k, v in mapping.items()}[
-                            int(list(filter(str.isdigit, c))[0])
-                        ]
-                        + f"|{c}",
-                        boxpoints="outliers",
-                        marker=dict(color=color, size=10),
-                        marker_color=color,
-                        showlegend=True,
-                    )
+                    [
+                        99,
+                        go.Box(
+                            y=yd,
+                            name={v: k for k, v in mapping.items()}[
+                                int(list(filter(str.isdigit, c))[0])
+                            ]
+                            + label_,
+                            boxpoints="outliers",
+                            marker=dict(color=color, size=10),
+                            marker_color=color,
+                            showlegend=True,
+                        )
+                    ]
                 )
                 sec_axis.append(True)
 
             traces.append(
-                go.Bar(
-                    y=class0,
-                    x=[xd],
-                    name="Healthy samples",
-                    width=[0],
-                    offsetgroup="Healthy samples",
-                    marker=dict(color="#1f77b4"),
-                    opacity=0.8,
-                    showlegend=True,
-                )
+                [ 99,
+                    go.Bar(
+                        y=class0,
+                        x=[xd],
+                        name="Healthy samples",
+                        width=[0],
+                        offsetgroup="Healthy samples",
+                        marker=dict(color="#1f77b4"),
+                        opacity=0.8,
+                        showlegend=True,
+                    )
+                ]
             )
             sec_axis.append(False)
             traces.append(
-                go.Bar(
-                    y=class0,
-                    x=[xd],
-                    name="Unhealthy samples",
-                    width=[0],
-                    offsetgroup="Unhealthy samples",
-                    marker=dict(color="#ff7f0e"),
-                    opacity=0.8,
-                    showlegend=True,
-                )
+                [   99,
+                    go.Bar(
+                        y=class0,
+                        x=[xd],
+                        name="Unhealthy samples",
+                        width=[0],
+                        offsetgroup="Unhealthy samples",
+                        marker=dict(color="#ff7f0e"),
+                        opacity=0.8,
+                        showlegend=True,
+                    )
+
+                ]
             )
             sec_axis.append(False)
 
@@ -3537,8 +3572,10 @@ def plot_ml_report_final_abs(output_dir):
             uh_labels = df_f_["config"].values[0].split(">UH=")[1].split(">")[0]
 
             fig_ = make_subplots(specs=[[{"secondary_y": True}]])
+
+            traces.sort(key=lambda x: x[0])
             for a, t in zip(sec_axis, traces):
-                fig_.add_trace(t, secondary_y=a)
+                fig_.add_trace(t[1], secondary_y=a)
 
             fig_.update_yaxes(showgrid=True, gridwidth=1, automargin=True)
             fig_.update_layout(
@@ -3549,14 +3586,14 @@ def plot_ml_report_final_abs(output_dir):
             filepath = output_dir / f"ML_performance_final_auc_{farm}_{h_tag}_abs.html"
             print(filepath)
             fig_.update_layout(barmode="group")
-            fig_.update_yaxes(title_text="Absolute Delta AUC(%)", secondary_y=True)
+            fig_.update_yaxes(title_text="Delta AUC(%)", secondary_y=True)
             fig_.update_yaxes(title_text="Sample count", secondary_y=False)
             fig_.update_xaxes(range=[-1, len(x_data) - 0.5])
             fig_.write_html(str(filepath))
 
 
 if __name__ == "__main__":
-    plot_ml_report_final_abs(Path("E:/thesis_weather_paper/main_experiment"))
+    plot_ml_report_final_abs(Path("../output_0/main_experiment"))
     # dir_path = "F:/Data2/job_debug/ml"
     # output_dir = "F:/Data2/job_debug/ml"
     # build_roc_mosaic(dir_path, output_dir)
