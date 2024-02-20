@@ -10,11 +10,11 @@ def main(
     exp_temporal: bool = False,
     exp_cross_farm: bool = False,
     weather_exp: bool = True,
-    output_dir: Path = Path("output_0"),
+    output_dir: Path = Path("output_debug_0"),
     delmas_dir_mrnn: Path = None,
     cedara_dir_mrnn: Path = None,
     n_job: int = 6,
-    export_hpc_string: bool = False,
+    export_hpc_string: bool = False
 ):
     """Thesis script runs all key experiments for data exploration chapter
     Args:\n

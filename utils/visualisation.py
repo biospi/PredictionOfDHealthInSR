@@ -586,7 +586,7 @@ def formatForBoxPlot(df, best_model):
         dfs.append(data)
 
         if np.sum(roc_auc_scores) != 0:
-            p_value = scipy.stats.wilcoxon(roc_auc_scores).pvalue
+            p_value = scipy.stats.wilcoxon(roc_auc_scores, alternative='less').pvalue
             data["p_value"] = p_value
         else:
             data["p_value"] = np.nan
@@ -637,43 +637,11 @@ def build_annotations(df, fig_auc_only):
 
 def human_readable(string, df, n):
     split = string.split(">")
-    hr_string = f"{split[1]} {split[2]} {split[3]} {split[4]} {split[10].split('_')[0]} {'NONE' if len(split[-4])==0 else split[-4]}"
+    hr_string = f"{split[1]} {split[2]} {split[3]} {split[10].split('_')[0]} {'NONE' if len(split[-4])==0 else split[-4]}"
     if "rbf" in string:
         hr_string = hr_string.replace("SVC", "SVCrbf")
     # hr_string = f"{split[1]} {split[2]} {split[10].split('_')[0]}"
     return hr_string
-
-
-def get_delta(df):
-    data = {}
-    for item in df["config"].unique():
-        df_ = df[df["config"] == item]["roc_auc_scores"]
-        data[item] = df_.median()
-    data_sorted = sorted(data, key=data.get, reverse=True)
-    df_max = df[df["config"] == data_sorted[0]]
-    # substract all configs with max
-    dfs_deltas = []
-    cols_delta = [
-        "test_balanced_accuracy_score",
-        "test_precision_score0",
-        "test_precision_score1",
-        "test_recall_score0",
-        "test_recall_score1",
-        "test_f1_score0",
-        "test_f1_score1",
-        "roc_auc_scores",
-    ]
-    for item in df["config"].unique():
-        # if item != data_sorted[0]:
-        #     continue
-        df_o = df[df["config"] == item]
-        df_diff = df[df["config"] == item]
-        df_diff[cols_delta] = df_o[cols_delta] - df_max[cols_delta]
-        df_diff = df_diff.reset_index(drop=True)
-        dfs_deltas.append(df_diff)
-    df_result = pd.concat(dfs_deltas)
-    df_result = df_result.sort_values("config_s")
-    return df_result
 
 
 def plot_ml_report_final(
@@ -1059,7 +1027,7 @@ def plot_ml_report_final(
                 title=f"healthy labels={h_labels} unhealthy labels={uh_labels}",
                 yaxis_title="AUC",
             )
-            fig_.update_xaxes(tickangle=-45)
+            fig_.update_xaxes(tickangle=45)
 
             # d = {}
             # for i, trace in enumerate(fig_["data"]):
@@ -3289,9 +3257,11 @@ def find_best_model(output_dir):
     for farm in df_res["farm_id"].unique():
         d = df_res[df_res["farm_id"] == farm]
         df_s = d.sort_values("median_auc", ascending=False)
-        best_model = df_s.head(1)
+        #best_model = df_s.head(1)
+        best_model = df_s[df_s["post_p"] == "QN_ANSCOMBE_LOG"] #not the best model overall, this is the model that was trained with activity data only
+        if len(best_model) == 0:
+            best_model = df_s.head(1)
         best_models[farm] = best_model
-
     return best_models
 
 
@@ -3582,7 +3552,22 @@ def plot_ml_report_final_abs(output_dir):
                 title=f"healthy labels={h_labels} unhealthy labels={uh_labels}",
                 yaxis_title="AUC",
             )
-            fig_.update_xaxes(tickangle=-45)
+            fig_.update_xaxes(tickangle=45)
+
+            #todo remove
+            # custom_tick_vals = [0, 1, 2]
+            # custom_tick_text = ["Rainfall", "Activity", "Rainfall and Activity"]
+            # # Update x-axis tick labels
+            # fig_.update_xaxes(tickvals=custom_tick_vals, ticktext=custom_tick_text)
+            # # Rename legend item names
+            # for i, trace in enumerate(fig_['data']):
+            #     print(trace['name'])
+            #     new_name = trace['name']\
+            #         .replace('QN_ANSCOMBE_LOG_RAINFALLAPPEND_STDS', 'Activity and Rainfall')\
+            #         .replace('QN_ANSCOMBE_LOG', 'Activity')\
+            #         .replace('RAINFALL_STDS', 'Rainfall')
+            #     trace['name'] = new_name
+
             filepath = output_dir / f"ML_performance_final_auc_{farm}_{h_tag}_delta.html"
             print(filepath)
             fig_.update_layout(barmode="group")
@@ -3593,7 +3578,7 @@ def plot_ml_report_final_abs(output_dir):
 
 
 if __name__ == "__main__":
-    plot_ml_report_final_abs(Path("../output_0/main_experiment"))
+    plot_ml_report_final_abs(Path("../output_debug_0/main_experiment"))
     # dir_path = "F:/Data2/job_debug/ml"
     # output_dir = "F:/Data2/job_debug/ml"
     # build_roc_mosaic(dir_path, output_dir)

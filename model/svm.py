@@ -25,6 +25,7 @@ from sklearn.model_selection import (
     LeaveOneOut, GridSearchCV)
 from sklearn.svm import SVC
 
+from eval_regularisation import regularisation_heatmap
 from utils._custom_split import LeaveNOut, BootstrapCustom_
 from utils.visualisation import (
     plot_roc_range,
@@ -37,6 +38,8 @@ from utils.visualisation import (
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn import tree
 from sklearn.linear_model import LogisticRegression
+
+from var import parameters
 
 
 def downsample_df(data_frame, class_healthy, class_unhealthy):
@@ -515,68 +518,6 @@ def process_ml(
     plot_ml_report_final_abs(output_dir.parent.parent)
 
 
-def augment(df, n, ids, meta, meta_short, sample_dates):
-    df_data = df.iloc[:, :-2]
-    df_meta = df.iloc[:, -2:]
-    crop = int(n/2)
-    df_data_crop = df_data.iloc[:, crop:-crop]
-    # print(df_data_crop)
-    jittered_columns = []
-    for i in np.arange(1, crop):
-        cols = df_data_crop.columns.values.astype(int)
-        left = cols - i
-        right = cols + i
-        jittered_columns.append(left)
-        jittered_columns.append(right)
-    dfs = []
-    for j_c in jittered_columns:
-        d = df[j_c]
-        d.columns = list(range(d.shape[1]))
-        d = pd.concat([d, df_meta], axis=1)
-        dfs.append(d)
-    df_augmented = pd.concat(dfs, ignore_index=True)
-    meta_aug = np.array(meta.tolist() * len(jittered_columns))
-    ids_aug = np.array(ids * len(jittered_columns))
-    meta_short_aug = np.array(meta_short.tolist() * len(jittered_columns))
-    sample_dates = np.array(sample_dates.tolist() * len(jittered_columns))
-    return df_augmented, ids_aug, sample_dates, meta_short_aug, meta_aug
-
-
-def augment_(X_train, y_train, n, sample_dates_train, ids_train, meta_train):
-    df = pd.concat([pd.DataFrame(X_train),
-                    pd.DataFrame(y_train, columns=["target"]),
-                    pd.DataFrame(sample_dates_train, columns=["dates"]),
-                    pd.DataFrame(ids_train, columns=["ids"]),
-                    pd.DataFrame(meta_train, columns=["meta"])], axis=1)
-    df_data = df.iloc[:, :-4]
-    df_target = df.iloc[:, -4]
-    df_date = df.iloc[:, -3]
-    df_ids = df.iloc[:, -2]
-    df_meta = df.iloc[:, -1]
-    crop = int(n/2)
-    df_data_crop = df_data.iloc[:, crop:-crop]
-    # print(df_data_crop)
-    jittered_columns = []
-    for i in np.arange(1, crop):
-        cols = df_data_crop.columns.values.astype(int)
-        left = cols - i
-        right = cols + i
-        jittered_columns.append(left)
-        jittered_columns.append(right)
-    dfs = []
-    for j_c in jittered_columns:
-        d = df[j_c]
-        d.columns = list(range(d.shape[1]))
-        d = pd.concat([d, df_target, df_date, df_ids, df_meta], axis=1)
-        dfs.append(d)
-    df_augmented = pd.concat(dfs, ignore_index=True)
-    X_train_aug = df_augmented.iloc[:, :-4].values
-    y_train_aug = df_augmented.iloc[:, -4].values.flatten()
-    y_date_aug = df_augmented.iloc[:, -3].values.flatten()
-    y_ids_aug = df_augmented.iloc[:, -2].values.flatten()
-    meta_aug = df_augmented.iloc[:, -1].values.flatten()
-    return X_train_aug, y_train_aug, y_date_aug, y_ids_aug, meta_aug
-
 
 def fold_worker(
     info,
@@ -607,7 +548,6 @@ def fold_worker(
     axis_test,
     axis_train,
     ifold,
-    augment_training,
     nfold,
     export_fig_as_pdf,
     plot_2d_space,
@@ -664,14 +604,15 @@ def fold_worker(
 
     start_time = time.time()
 
-    # if augment_training > 0:
-    #     print(f"augment_training X_train shape={X_train.shape}..")
-    #     X_train, y_train, sample_dates_train, ids_train, meta_train = augment_(X_train, y_train, augment_training, sample_dates_train, ids_train, meta_train)
-    #     print(f"augment_training X_train shape={X_train.shape}..")
-    #     X_test = X_test[:, 0:X_train.shape[1]] #todo fix
-    #     X_fold = X_fold[:, 0:X_train.shape[1]]
-
     clf.fit(X_train, y_train)
+
+    models_dir = out_dir / "models" / f"{type(clf).__name__}_{clf_kernel}_{steps}"
+    models_dir.mkdir(parents=True, exist_ok=True)
+
+    if hasattr(clf, "cv_results_"):
+        df = pd.DataFrame(clf.cv_results_)
+        filename = models_dir / f"regularisation_{ifold}.csv"
+        df.to_csv(filename, index=False)
 
     fit_time = time.time() - start_time
 
@@ -685,9 +626,6 @@ def fold_worker(
         print(filename)
         with open(str(filename), "wb") as f:
             pickle.dump(clf, f)
-        # df_cv_results = pd.DataFrame(clf.cv_results_)
-        # filename = models_dir / f"model_{ifold}.csv"
-        # df_cv_results.to_csv(filename)
 
     # test healthy/unhealthy
     y_pred_test = clf.predict(X_test)
@@ -721,10 +659,6 @@ def fold_worker(
     tprs_test.append(interp_tpr_test)
     auc_value_test = viz_roc_test.roc_auc
     print("auc test=", auc_value_test)
-    # if cv_name == "LeaveOneOut":
-    #     #auc_value_test = ((np.mean(y_pred_proba_test) > 0.5).astype(int) == np.mean(y_test)).astype(float)
-    #     #auc_value_test = balanced_accuracy_score(y_test, y_pred)
-    #     print("acc test=", auc_value_test)
 
     aucs_roc_test.append(auc_value_test)
 
@@ -974,7 +908,9 @@ def cross_validate_svm_fast(
     for kernel in svc_kernel:
         if kernel in ["linear", "rbf"]:
             if C is None or gamma is None:
-                clf = SVC(kernel=kernel, probability=True)
+                svc = SVC(kernel=kernel, probability=True)
+                parameters["kernel"] = [kernel]
+                clf = GridSearchCV(svc, parameters, refit=True, return_train_score=True)
             else:
                 clf = SVC(kernel=kernel, probability=True, C=C, gamma=gamma)
             #clf = GridSearchCV(clf, tuned_parameters_rbf, refit=True, verbose=3)
@@ -1050,7 +986,6 @@ def cross_validate_svm_fast(
                         axis_test,
                         axis_train,
                         ifold,
-                        augment_training,
                         cross_validation_method.get_n_splits(),
                         export_fig_as_pdf,
                         plot_2d_space,
@@ -1059,41 +994,6 @@ def cross_validate_svm_fast(
                         gamma
                     ),
                 )
-                # fold_worker(
-                #     info,
-                #     cv_name,
-                #     save_model,
-                #     out_dir,
-                #     y_h,
-                #     ids,
-                #     meta,
-                #     meta_data_short,
-                #     sample_dates,
-                #     days,
-                #     steps,
-                #     tprs_test,
-                #     tprs_train,
-                #     aucs_roc_test,
-                #     aucs_roc_train,
-                #     fold_results,
-                #     fold_probas,
-                #     label_series,
-                #     mean_fpr_test,
-                #     mean_fpr_train,
-                #     clf,
-                #     X,
-                #     y,
-                #     train_index,
-                #     test_index,
-                #     axis_test,
-                #     axis_train,
-                #     ifold,
-                #     augment_training,
-                #     cross_validation_method.get_n_splits(),
-                #     export_fig_as_pdf,
-                #     plot_2d_space,
-                #     clf_kernel
-                # )
             pool.close()
             pool.join()
             end = time.time()
@@ -1109,6 +1009,10 @@ def cross_validate_svm_fast(
             print("total time (s)= " + str(end - start))
 
         plot_fold_details(fold_results, meta, meta_columns, out_dir)
+
+        models_dir = out_dir / "models" / f"{type(clf).__name__}_{clf_kernel}_{steps}"
+        regularisation_heatmap(models_dir, out_dir / "regularisation")
+
 
         info = f"X shape:{str(X.shape)} healthy:{fold_results[0]['n_healthy']} unhealthy:{fold_results[0]['n_unhealthy']} \n" \
                f" training_shape:{fold_results[0]['training_shape']} testing_shape:{fold_results[0]['testing_shape']}"
@@ -1587,8 +1491,6 @@ def process_clf(
     aucs_roc_train = []
     for i, (X_train, y_train) in enumerate(folds):
         print(f"progress {i}/{n_fold} ...")
-        # y_t = binarize(y_t.copy())
-        # y_test = binarize(y_test)
         clf = SVC(kernel="linear", probability=True, class_weight="balanced")
         # tuned_parameters = [
         #     {
