@@ -230,6 +230,6 @@ def main(
 
 
 if __name__ == "__main__":
-    main(delmas_dir_mrnn=Path("datasets/delmas_dataset4_mrnn_7day"),
-         cedara_dir_mrnn=Path("datasets/cedara_datasetmrnn7_23"))
-    # typer.run(main)
+    # main(delmas_dir_mrnn=Path("datasets/delmas_dataset4_mrnn_7day"),
+    #      cedara_dir_mrnn=Path("datasets/cedara_datasetmrnn7_23"))
+    typer.run(main)
