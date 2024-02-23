@@ -61,6 +61,7 @@ def main(
                             pre_visu=False,
                             skip=False,
                             enable_regularisation=enable_regularisation,
+                            n_job=n_job,
                             weather_file=Path("weather_data/delmas_south_africa_2011-01-01_to_2015-12-31.csv")
                         )
                         n_imputed_days = 1
@@ -83,6 +84,7 @@ def main(
                             export_fig_as_pdf=False,
                             pre_visu=False,
                             skip=False,
+                            n_job=n_job,
                             export_hpc_string=export_hpc_string,
                             enable_regularisation=enable_regularisation,
                             weather_file=Path("weather_data/cedara_south_africa_2011-01-01_to_2015-12-31.csv"
