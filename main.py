@@ -11,8 +11,8 @@ def main(
     exp_cross_farm: bool = False,
     weather_exp: bool = True,
     output_dir: Path = Path("output_debug_1"),
-    delmas_dir_mrnn: Path = None,
-    cedara_dir_mrnn: Path = None,
+    delmas_dir_mrnn: Path = Path("datasets/delmas_dataset4_mrnn_7day"),
+    cedara_dir_mrnn: Path = Path("datasets/cedara_datasetmrnn7_23"),
     n_job: int = 6,
     enable_regularisation: bool = False,
     export_hpc_string: bool = False
