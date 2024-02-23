@@ -3389,7 +3389,7 @@ def plot_ml_report_final_abs(output_dir):
             mapping = dict(zip(preproc, range(len(preproc))))
 
             df_f_["config_s"] = (
-                df_f_["config_s"].str.split(" ").str[0:-1].str.join(" ")
+                df_f_["config_s"].str.split(" ").str[:].str.join(" ")
                 + " ("
                 + [str(mapping[x]) for x in df_f_["config_s"].str.split(" ").str[-1]]
                 + ")"
@@ -3485,9 +3485,12 @@ def plot_ml_report_final_abs(output_dir):
                     print(e)
                     color = values[0]
 
-                label_ = f"|{c} <i>p_value={p_values[k]:.6f}</i>"
-                if np.isnan(p_values[k]):
+                try:
+                    label_ = f"|{c} <i>p_value={p_values[k]:.6f}</i>"
+                except IndexError as e:
+                    print(e)
                     label_ = f"|{c}"
+
                 traces.append(
                     [
                         99,
@@ -3554,19 +3557,53 @@ def plot_ml_report_final_abs(output_dir):
             )
             fig_.update_xaxes(tickangle=45)
 
+            x_tick_labels = x_data
+
             #todo remove
-            # custom_tick_vals = [0, 1, 2]
-            # custom_tick_text = ["Rainfall", "Activity", "Rainfall and Activity"]
+            # custom_tick_vals = np.arange(len(x_data))
+            # custom_tick_text = []
+            # for v in x_data:
+            #     new_label = ''
+            #     steps = v.split(' ')[-2]
+            #     if steps == "TEMPERATURE_STDS":
+            #         new_label = "Temperature"
+            #     if steps == "QN_ANSCOMBE_LOG_WINDSPEED_STDS":
+            #         new_label = "Activity and Wind speed"
+            #     if steps == "RAINFALL_STDS":
+            #         new_label = "Rainfall"
+            #     if steps == "QN_ANSCOMBE_LOG":
+            #         new_label = "Activity"
+            #     if steps == "QN_ANSCOMBE_LOG_TEMPERATURE_STDS":
+            #         new_label = "Activity and Temperature"
+            #     if steps == "QN_ANSCOMBE_LOG_HUMIDITY_STDS":
+            #         new_label = "Activity and Humidity"
+            #     if steps == "WINDSPEED_STDS":
+            #         new_label = "Wind speed"
+            #     if steps == "HUMIDITY_STDS":
+            #         new_label = "Humidity"
+            #     if steps == "QN_ANSCOMBE_LOG_RAINFALLAPPEND_STDS":
+            #         new_label = "Activity and Rainfall"
+            #     custom_tick_text.append(new_label)
             # # Update x-axis tick labels
             # fig_.update_xaxes(tickvals=custom_tick_vals, ticktext=custom_tick_text)
+            #
             # # Rename legend item names
             # for i, trace in enumerate(fig_['data']):
             #     print(trace['name'])
             #     new_name = trace['name']\
             #         .replace('QN_ANSCOMBE_LOG_RAINFALLAPPEND_STDS', 'Activity and Rainfall')\
-            #         .replace('QN_ANSCOMBE_LOG', 'Activity')\
-            #         .replace('RAINFALL_STDS', 'Rainfall')
+            #         .replace('QN_ANSCOMBE_LOG', 'Activity') \
+            #         .replace('RAINFALL_STDS', 'Rainfall') \
+            #         .replace('QN_ANSCOMBE_LOG_WINDSPEED_STDS', 'Activity and Wind speed') \
+            #         .replace('WINDSPEED_STDS', 'Wind speed') \
+            #         .replace('QN_ANSCOMBE_LOG_TEMPERATURE_STDS', 'Activity and Temperature') \
+            #         .replace('TEMPERATURE_STDS', 'Temperature') \
+            #         .replace('QN_ANSCOMBE_LOG_HUMIDITY_STDS', 'Activity and Humidity') \
+            #         .replace('HUMIDITY_STDS', 'Humidity')
             #     trace['name'] = new_name
+
+            # custom_tick_text = custom_tick_text + ["Label 1", "Label 2"]  # Provide labels for each trace
+            # fig_.update_traces(name=custom_tick_text)
 
             filepath = output_dir / f"ML_performance_final_auc_{farm}_{h_tag}_delta.html"
             print(filepath)
@@ -3578,7 +3615,7 @@ def plot_ml_report_final_abs(output_dir):
 
 
 if __name__ == "__main__":
-    plot_ml_report_final_abs(Path("../output_debug_0/main_experiment"))
+    plot_ml_report_final_abs(Path("../output_debug_1/main_experiment"))
     # dir_path = "F:/Data2/job_debug/ml"
     # output_dir = "F:/Data2/job_debug/ml"
     # build_roc_mosaic(dir_path, output_dir)

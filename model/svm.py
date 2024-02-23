@@ -347,7 +347,8 @@ def process_ml(
     wheather_days=None,
     syhth_thresh=2,
     C=None,
-    gamma=None
+    gamma=None,
+    enable_regularisation=False
 ):
     print("*******************************************************************")
     mlp_layers = (1000, 500, 100, 45, 30, 15)
@@ -470,7 +471,8 @@ def process_ml(
             export_fig_as_pdf,
             syhth_thresh,
             C=C,
-            gamma=gamma
+            gamma=gamma,
+            enable_regularisation=enable_regularisation
         )
 
     # scores, scores_proba = cross_validate_custom(
@@ -855,7 +857,8 @@ def cross_validate_svm_fast(
     export_fig_as_pdf=False,
     syhth_thresh=2,
     C=None,
-    gamma=None
+    gamma=None,
+    enable_regularisation=False
 ):
     """Cross validate X,y data and plot roc curve with range
     Args:
@@ -907,13 +910,17 @@ def cross_validate_svm_fast(
     # ]
     for kernel in svc_kernel:
         if kernel in ["linear", "rbf"]:
-            if C is None or gamma is None:
+            if enable_regularisation:
                 svc = SVC(kernel=kernel, probability=True)
                 parameters["kernel"] = [kernel]
                 clf = GridSearchCV(svc, parameters, refit=True, return_train_score=True)
             else:
-                clf = SVC(kernel=kernel, probability=True, C=C, gamma=gamma)
+                if C is not None and gamma is not None:
+                    clf = SVC(kernel=kernel, probability=True, C=C, gamma=gamma)
+                else:
+                    clf = SVC(kernel=kernel, probability=True)
             #clf = GridSearchCV(clf, tuned_parameters_rbf, refit=True, verbose=3)
+
 
         if kernel in ["knn"]:
             n_neighbors = int(np.sqrt(len(y)))
@@ -1010,9 +1017,9 @@ def cross_validate_svm_fast(
 
         plot_fold_details(fold_results, meta, meta_columns, out_dir)
 
-        models_dir = out_dir / "models" / f"{type(clf).__name__}_{clf_kernel}_{steps}"
-        regularisation_heatmap(models_dir, out_dir / "regularisation")
-
+        if enable_regularisation:
+            models_dir = out_dir / "models" / f"{type(clf).__name__}_{clf_kernel}_{steps}"
+            regularisation_heatmap(models_dir, out_dir / "regularisation")
 
         info = f"X shape:{str(X.shape)} healthy:{fold_results[0]['n_healthy']} unhealthy:{fold_results[0]['n_unhealthy']} \n" \
                f" training_shape:{fold_results[0]['training_shape']} testing_shape:{fold_results[0]['testing_shape']}"

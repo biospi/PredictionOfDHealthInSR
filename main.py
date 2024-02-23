@@ -10,10 +10,11 @@ def main(
     exp_temporal: bool = False,
     exp_cross_farm: bool = False,
     weather_exp: bool = True,
-    output_dir: Path = Path("output_debug_0"),
+    output_dir: Path = Path("output_debug_1"),
     delmas_dir_mrnn: Path = None,
     cedara_dir_mrnn: Path = None,
     n_job: int = 6,
+    enable_regularisation: bool = False,
     export_hpc_string: bool = False
 ):
     """Thesis script runs all key experiments for data exploration chapter
@@ -25,6 +26,12 @@ def main(
         print("experiment 1 (weather): main pipeline")
 
         steps_list = [
+            ["WINDSPEED", "STDS"],
+            ["QN", "ANSCOMBE", "LOG", "WINDSPEED", "STDS"],
+            ["HUMIDITY", "STDS"],
+            ["QN", "ANSCOMBE", "LOG", "HUMIDITY", "STDS"],
+            ["TEMPERATURE", "STDS"],
+            ["QN", "ANSCOMBE", "LOG", "TEMPERATURE", "STDS"],
             ["RAINFALL", "STDS"],
             ["QN", "ANSCOMBE", "LOG", "RAINFALLAPPEND", "STDS"],
             ["QN", "ANSCOMBE", "LOG"]
@@ -53,6 +60,7 @@ def main(
                             plot_2d_space=False,
                             pre_visu=False,
                             skip=False,
+                            enable_regularisation=enable_regularisation,
                             weather_file=Path("weather_data/delmas_south_africa_2011-01-01_to_2015-12-31.csv")
                         )
                         n_imputed_days = 1
@@ -76,6 +84,7 @@ def main(
                             pre_visu=False,
                             skip=False,
                             export_hpc_string=export_hpc_string,
+                            enable_regularisation=enable_regularisation,
                             weather_file=Path("weather_data/cedara_south_africa_2011-01-01_to_2015-12-31.csv"
                             )
                         )
@@ -153,6 +162,7 @@ def main(
                                         pre_visu=False,
                                         export_hpc_string=export_hpc_string,
                                         skip=False,
+                                        enable_regularisation=enable_regularisation,
                                         n_job=n_job,
                                     )
 

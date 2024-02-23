@@ -54,6 +54,8 @@ def plot_fig(df, col, out_dir, title=""):
 
 def regularisation_heatmap(data_dir, out_dir):
     files = list(data_dir.glob("*.csv"))
+    print(data_dir)
+    print(files)
     dfs = []
     mean_test_score_list = []
     mean_train_score_list = []

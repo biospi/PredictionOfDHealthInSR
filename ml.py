@@ -150,6 +150,7 @@ def main(
     plot_2d_space: bool = False,
     export_fig_as_pdf: bool = False,
     skip: bool = False,
+    enable_regularisation: bool = True,
     export_hpc_string: bool = False,
     c: float = None,
     gamma: float = None
@@ -663,7 +664,8 @@ def main(
             wheather_days=n_weather_days,
             syhth_thresh=syhth_thresh,
             C=c,
-            gamma=gamma
+            gamma=gamma,
+            enable_regularisation=enable_regularisation
         )
 
 
