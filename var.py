@@ -10,20 +10,8 @@ from utils.Utils import anscombe
 
 
 parameters = {
-    "C": [1, 10, 100, 1000, 2000],
-    "gamma": [
-        1.0e-100,
-        7.89652287e-94,
-        4.92388263e-80,
-        3.07029063e-66,
-        1.91791026e-52,
-        1.19421878e-38,
-        7.44380301e-25,
-        4.64158883e-11,
-        3.66524124e-4,
-        2.89426612e3,
-        2.28546386e10
-    ],
+    "C": [0.01, 0.1, 1.0, 10.0, 100.0, 1000.0, 10000.0, 100000.0, 1000000.0, 10000000.0, 100000000.0, 1000000000.0, 10000000000.0],
+    "gamma": [1e-09, 1e-08, 1e-07, 1e-06, 1e-05, 0.0001, 0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0],
 }
 
 
@@ -187,13 +175,17 @@ def show_sorted_transponders(transponders, farm, data_folder):
 
 
 if __name__ == "__main__":
-    show_sorted_transponders(transponders_delmas, "Delmas", 'E:/thesis/activity_data/delmas/backfill_1min_delmas_fixed')
-    show_sorted_transponders(transponders_cedara, "Cedara", 'E:/thesis/activity_data/cedara/backfill_1min_cedara_fixed')
-    n_top = 3
-    main(transponders_delmas, "Delmas", n_top, None, 'E:/thesis/activity_data/delmas/backfill_1min_delmas_fixed')
-    main(transponders_delmas, "Delmas", n_top, n_top, 'E:/thesis/activity_data/delmas/backfill_1min_delmas_fixed')
-    main(transponders_cedara, "Cedara", n_top, None, 'E:/thesis/activity_data/cedara/backfill_1min_cedara_fixed')
-    main(transponders_cedara, "Cedara", n_top, n_top, 'E:/thesis/activity_data/cedara/backfill_1min_cedara_fixed')
+    C_range = list(np.logspace(-2, 10, 13))
+    gamma_range = list(np.logspace(-9, 3, 13))
+    print(C_range)
+    print(gamma_range)
+    # show_sorted_transponders(transponders_delmas, "Delmas", 'E:/thesis/activity_data/delmas/backfill_1min_delmas_fixed')
+    # show_sorted_transponders(transponders_cedara, "Cedara", 'E:/thesis/activity_data/cedara/backfill_1min_cedara_fixed')
+    # n_top = 3
+    # main(transponders_delmas, "Delmas", n_top, None, 'E:/thesis/activity_data/delmas/backfill_1min_delmas_fixed')
+    # main(transponders_delmas, "Delmas", n_top, n_top, 'E:/thesis/activity_data/delmas/backfill_1min_delmas_fixed')
+    # main(transponders_cedara, "Cedara", n_top, None, 'E:/thesis/activity_data/cedara/backfill_1min_cedara_fixed')
+    # main(transponders_cedara, "Cedara", n_top, n_top, 'E:/thesis/activity_data/cedara/backfill_1min_cedara_fixed')
 
 
 
