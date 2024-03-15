@@ -913,7 +913,7 @@ def cross_validate_svm_fast(
             if enable_regularisation:
                 svc = SVC(kernel=kernel, probability=True)
                 parameters["kernel"] = [kernel]
-                clf = GridSearchCV(svc, parameters, return_train_score=True, n_jobs=1)
+                clf = GridSearchCV(svc, parameters, return_train_score=True, n_jobs=1, cv=3)
             else:
                 if C is not None and gamma is not None:
                     clf = SVC(kernel=kernel, probability=True, C=C, gamma=gamma)
