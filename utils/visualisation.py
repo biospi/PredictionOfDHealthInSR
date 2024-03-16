@@ -587,6 +587,10 @@ def formatForBoxPlot(df, best_model):
 
         if np.sum(roc_auc_scores) != 0:
             p_value = scipy.stats.wilcoxon(roc_auc_scores, alternative='less').pvalue
+
+            # specified_value = 0.5
+            # statistic, p_value = scipy.stats.wilcoxon(roc_auc_scores - specified_value, alternative='greater')
+
             data["p_value"] = p_value
         else:
             data["p_value"] = np.nan
