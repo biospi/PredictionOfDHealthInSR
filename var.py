@@ -10,8 +10,8 @@ from utils.Utils import anscombe
 
 
 parameters = {
-    "C": [1000.0, 56234.13251903491, 3162277.6601683795, 177827941.00389227, 10000000000.0],
-    "gamma": [1e-30, 4.6415888336127916e-24, 2.1544346900318954e-17, 1e-10, 0.00046415888336127914, 2154.4346900318956, 10000000000.0, 4.6415888336128296e+16, 2.1544346900318955e+23, 1e+30],
+    "C": [1.0, 316.22776601683796, 100000.0, 31622776.60168379],
+    "gamma": [1e-100, 3.162277660168379e-83, 1e-65, 3.162277660168379e-48, 0.00046415888336127914, 2154.4346900318956, 10000000000.0, 4.6415888336128296e+16, 2.1544346900318955e+23, 1e+30, 1e-30, 3.162277660168379e-48, 1e-65, 3.162277660168379e-83, 1e-100],
 }
 
 
@@ -392,10 +392,15 @@ def show_sorted_transponders(transponders, farm, data_folder):
 
 
 if __name__ == "__main__":
-    array = list(np.geomspace(1.0e-30, 1e30, num=10))
-    print(array)
-    array = list(np.geomspace(1e3, 1e10, num=5))
-    print(array)
+    array = list(np.geomspace(1.0e-30, 1.0e-100, num=5))
+    print(array[::])
+    # array = list(np.geomspace(1, 1e10, num=5))
+    # print(array)
+    # array = list(np.geomspace(1, 0.00045832505734316455, num=5))
+    # print(array)
+    # array = list(np.geomspace(1, 1e-4, num=5))
+    # print(array)
+
     # C_range = list(np.logspace(-2, 10, 13))
     # gamma_range = list(np.logspace(-9, 3, 13))
     # print(C_range)

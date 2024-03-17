@@ -6,15 +6,15 @@ from pathlib import Path
 
 
 def main(
-    exp_main: bool = False,
-    exp_temporal: bool = True,
+    exp_main: bool = True,
+    exp_temporal: bool = False,
     exp_cross_farm: bool = False,
     weather_exp: bool = False,
     output_dir: Path = Path("output_debug_3"),
     delmas_dir_mrnn: Path = Path("datasets/delmas_dataset4_mrnn_7day"),
     cedara_dir_mrnn: Path = Path("datasets/cedara_datasetmrnn7_23"),
-    n_job: int = 6,
-    enable_regularisation: bool = True,
+    n_job: int = 4,
+    enable_regularisation: bool = False,
     export_hpc_string: bool = False
 ):
     """Thesis script runs all key experiments for data exploration chapter
