@@ -15,7 +15,8 @@ def main(
     cedara_dir_mrnn: Path = Path("datasets/cedara_datasetmrnn7_23"),
     n_job: int = 4,
     enable_regularisation: bool = False,
-    export_hpc_string: bool = False
+    export_hpc_string: bool = False,
+    plot_2d_space: bool = False
 ):
     """Thesis script runs all key experiments for data exploration chapter
     Args:\n
@@ -160,7 +161,7 @@ def main(
                                         ],
                                         study_id=farm_id,
                                         export_fig_as_pdf=False,
-                                        plot_2d_space=True,
+                                        plot_2d_space=plot_2d_space,
                                         pre_visu=False,
                                         export_hpc_string=export_hpc_string,
                                         skip=False,
