@@ -63,7 +63,7 @@ def main(
                                         export_fig_as_pdf=False,
                                         plot_2d_space=True,
                                         pre_visu=False,
-                                        export_hpc_string=export_hpc_string,
+                                        export_hpc_string=True,
                                         skip=False,
                                         enable_regularisation=True,
                                         n_job=1,

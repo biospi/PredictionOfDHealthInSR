@@ -60,7 +60,8 @@ def build_hpc_string(
     cv,
     individual_to_ignore,
     c,
-    gamma
+    gamma,
+    enable_regularisation
 ):
 
     #output_dir = f"/user/work/fo18103{str(output_dir).split(':')[1]}".replace("\\", '/')
@@ -68,7 +69,7 @@ def build_hpc_string(
     data_dir = str(dataset_folder).replace("\\", '/')
     output_dir = str(output_dir).replace("\\", '/')
 
-    hpc_s = f"ml.py --study-id {study_id} --output-dir {output_dir} --dataset-folder {data_dir} --n-imputed-days {n_imputed_days} --n-activity-days {n_activity_days} --syhth-thresh {syhth_thresh} --n-weather-days {n_weather_days} --weather-file {weather_file} --n-job {n_job} --cv {cv} "
+    hpc_s = f"ml.py --study-id {study_id} --output-dir {output_dir} --dataset-folder {data_dir} --n-imputed-days {n_imputed_days} --n-activity-days {n_activity_days} --syhth-thresh {syhth_thresh} --n-job {n_job} --cv {cv} "
     for item in preprocessing_steps:
         hpc_s += f"--preprocessing-steps {item} "
     for item in class_healthy_label:
@@ -82,14 +83,17 @@ def build_hpc_string(
     for item in classifiers:
         hpc_s += f"--classifiers {item} "
 
-    if c is not None:
-        hpc_s += f"--c {c} --gamma {gamma} "
+    # if c is not None:
+    #     hpc_s += f"--c {c} --gamma {gamma} "
 
     if pre_visu:
         hpc_s += "--pre_visu "
 
     if skip:
         hpc_s += "--skip"
+
+    if enable_regularisation:
+        hpc_s += "--enable-regularisation"
 
     print(hpc_s)
     with open("thesis_hpc_ln.txt", "a") as f:
@@ -202,7 +206,8 @@ def main(
             cv,
             individual_to_ignore,
             c,
-            gamma
+            gamma,
+            enable_regularisation
         )
         return
 
