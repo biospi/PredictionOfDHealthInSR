@@ -20,7 +20,7 @@ def plot_heatmap(df, col, out_dir, title=""):
                [np.format_float_scientific(i, 1) for i in df["gamma"].unique()], rotation=45)
     ax.set_yticks(np.arange(len(df["C"].unique()))[::-1],
                [np.format_float_scientific(i, ) for i in df["C"].unique()])
-    ax.set_title(f'Regularisation Accuracy\n{title}')
+    ax.set_title(f'Regularisation AUC\n{title}')
     fig.tight_layout()
     fig.show()
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -95,6 +95,13 @@ def regularisation_heatmap(data_dir, out_dir):
 
 
 if __name__ == "__main__":
-    input_folder = Path("E:/Cats/paper/All_50_10_030_001/rbf/QN_LeaveOneOut/models/GridSearchCV_rbf_QN")
-    out_dir = Path("E:/Cats/paper/All_50_10_030_001/rbf/_LeaveOneOut")
+    # scores = np.arange(0, 60)
+    # df = pd.DataFrame()
+    # C = np.arange(0, 4)
+    # Gamma = np.arange(0, 15)
+    #
+    # scores = np.array(scores).reshape(len(C), len(Gamma))
+
+    input_folder = Path("C:/Users/fo18103/PycharmProjects/pythonProject/PredictionOfDHealthInSR/output_debug_3/main_experiment/rbf/delmas_dataset4_mrnn_7day/delmas_dataset4_mrnn_7day_delmas_RepeatedKFold_7_7_QN_ANSCOMBE_LOG/2To2/models/GridSearchCV_rbf_QN_ANSCOMBE_LOG")
+    out_dir = Path("C:/Users/fo18103/PycharmProjects/pythonProject/PredictionOfDHealthInSR/output_debug_3")
     regularisation_heatmap(input_folder, out_dir)

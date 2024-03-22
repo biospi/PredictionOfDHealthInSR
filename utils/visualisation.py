@@ -1307,44 +1307,6 @@ def mean_confidence_interval(x):
     return lo_x_boot, hi_x_boot
 
 
-def plot_pr_range(
-    ax_pr, y_ground_truth, y_proba, aucs, out_dir, classifier_name, fig, cv_name, days
-):
-    y_ground_truth = np.concatenate(y_ground_truth)
-    y_proba = np.concatenate(y_proba)
-    mean_precision, mean_recall, _ = precision_recall_curve(y_ground_truth, y_proba)
-
-    mean_auc = auc(mean_recall, mean_precision)
-    lo, hi = mean_confidence_interval(aucs)
-    label = r"Mean ROC (Mean AUC = %0.2f, 95%% CI [%0.4f, %0.4f] )" % (mean_auc, lo, hi)
-    if len(aucs) <= 2:
-        label = r"Mean ROC (Mean AUC = %0.2f)" % mean_auc
-    ax_pr.step(mean_recall, mean_precision, label=label, lw=2, color="black")
-    ax_pr.set_xlabel("Recall")
-    ax_pr.set_ylabel("Precision")
-    ax_pr.legend(loc="lower left", fontsize="small")
-
-    ax_pr.set(
-        xlim=[-0.05, 1.05],
-        ylim=[-0.05, 1.05],
-        title="Precision Recall curve days=%d cv=%s" % (days, cv_name),
-    )
-    ax_pr.legend(loc="lower right")
-    # fig.show()
-
-    path = out_dir / "pr_curve" / cv_name
-    path.mkdir(parents=True, exist_ok=True)
-    final_path = path / f"pr_{classifier_name}.png"
-    print(final_path)
-    fig.savefig(final_path)
-
-    # path = "%s/roc_curve/svg/" % out_dir
-    # create_rec_dir(path)
-    # final_path = '%s/%s' % (path, 'roc_%s.svg' % classifier_name)
-    # print(final_path)
-    # fig.savefig(final_path)
-    return mean_auc
-
 
 def plot_roc_range(
     ax_roc_merge,
@@ -1381,7 +1343,7 @@ def plot_roc_range(
     # std_auc = np.std(aucs)
     lo, hi = mean_confidence_interval(aucs_test)
 
-    label = f"Mean ROC Test (Median AUC = {np.median(aucs_test):.2f}, 95% CI [{lo:.4f}, {hi:.4f}] )"
+    label = f"Median ROC Test (Median AUC = {np.median(aucs_test):.2f}, 95% CI [{lo:.4f}, {hi:.4f}] )"
     if len(aucs_test) <= 2:
         label = r"Mean ROC (Median AUC = %0.2f)" % np.median(aucs_test)
     ax[1].plot(mean_fpr_test, mean_tpr_test, color="black", label=label, lw=2, alpha=1)
@@ -1414,9 +1376,9 @@ def plot_roc_range(
     # std_auc = np.std(aucs)
     lo, hi = mean_confidence_interval(aucs_train)
 
-    label = f"Mean ROC Training (Median AUC = {np.median(aucs_train):.2f}, 95% CI [{lo:.4f}, {hi:.4f}] )"
+    label = f"Median ROC Training (Median AUC = {np.median(aucs_train):.2f}, 95% CI [{lo:.4f}, {hi:.4f}] )"
     if len(aucs_train) <= 2:
-        label = r"Mean ROC (Median AUC = %0.2f)" % np.median(aucs_train)
+        label = r"Median ROC (Median AUC = %0.2f)" % np.median(aucs_train)
     ax[0].plot(
         mean_fpr_train, mean_tpr_train, color="black", label=label, lw=2, alpha=1
     )

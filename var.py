@@ -9,9 +9,64 @@ from plotly.subplots import make_subplots
 from utils.Utils import anscombe
 
 
+# parameters = {
+#     "C": [1.0, 316.22776601683796, 100000.0, 31622776.60168379],
+#     "gamma": [
+#         1e-100,
+#         3.162277660168379e-83,
+#         1e-65,
+#         3.162277660168379e-48,
+#         0.00046415888336127914,
+#         2154.4346900318956,
+#         10000000000.0,
+#         4.6415888336128296e16,
+#         2.1544346900318955e23,
+#         1e30,
+#         1e-30,
+#         3.162277660168379e-48,
+#         1e-65,
+#         3.162277660168379e-83,
+#         1e-100
+#     ],
+# }
+
+# parameters = {
+#     "C": [1.0, 1000000, 10000000000],
+#     "gamma": [
+#         1e-1000,
+#         1e-100,
+#         1e-10,
+#         0.00046415888336127914,
+#         1e-1,
+#         1
+#     ],
+# }
+
 parameters = {
-    "C": [1.0, 316.22776601683796, 100000.0, 31622776.60168379],
-    "gamma": [1e-100, 3.162277660168379e-83, 1e-65, 3.162277660168379e-48, 0.00046415888336127914, 2154.4346900318956, 10000000000.0, 4.6415888336128296e+16, 2.1544346900318955e+23, 1e+30, 1e-30, 3.162277660168379e-48, 1e-65, 3.162277660168379e-83, 1e-100],
+    "C": [
+        1.00000000e-03,
+        4.64158883e-03,
+        2.15443469e-02,
+        1.00000000e-01,
+        4.64158883e-01,
+        2.15443469e00,
+        1.00000000e01,
+        4.64158883e01,
+        2.15443469e02,
+        1.00000000e03,
+    ],
+    "gamma": [
+        1.00000000e-03,
+        4.64158883e-03,
+        2.15443469e-02,
+        1.00000000e-01,
+        4.64158883e-01,
+        2.15443469e00,
+        1.00000000e01,
+        4.64158883e01,
+        2.15443469e02,
+        1.00000000e03,
+    ],
 }
 
 
@@ -392,8 +447,20 @@ def show_sorted_transponders(transponders, farm, data_folder):
 
 
 if __name__ == "__main__":
-    array = list(np.geomspace(1.0e-30, 1.0e-100, num=5))
-    print(array[::])
+    # Define the range of values for C and Gamma
+    C_range = np.logspace(
+        -3, 3, 10
+    )  # From 0.001 to 1000, with 7 values spaced logarithmically
+    gamma_range = np.logspace(
+        -3, 3, 10
+    )  # From 0.001 to 1000, with 7 values spaced logarithmically
+
+    # Create a dictionary parameter grid to be passed to GridSearchCV
+    parameters = {"C": C_range, "gamma": gamma_range}
+    print(parameters)
+
+    # array = list(np.geomspace(1.0e-30, 1.0e-100, num=5))
+    # print(array[::])
     # array = list(np.geomspace(1, 1e10, num=5))
     # print(array)
     # array = list(np.geomspace(1, 0.00045832505734316455, num=5))

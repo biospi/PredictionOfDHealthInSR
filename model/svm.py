@@ -661,6 +661,11 @@ def fold_worker(
     tprs_test.append(interp_tpr_test)
     auc_value_test = viz_roc_test.roc_auc
     print("auc test=", auc_value_test)
+    try:
+        print("gamma=", clf.best_estimator_._gamma)
+        print("C=", clf.best_estimator_.C)
+    except Exception as e:
+        print(e)
 
     aucs_roc_test.append(auc_value_test)
 
@@ -913,7 +918,7 @@ def cross_validate_svm_fast(
             if enable_regularisation:
                 svc = SVC(kernel=kernel, probability=True)
                 parameters["kernel"] = [kernel]
-                clf = GridSearchCV(svc, parameters, return_train_score=True, cv=3)
+                clf = GridSearchCV(svc, parameters, return_train_score=True, cv=10, scoring='roc_auc')
             else:
                 if C is not None and gamma is not None:
                     clf = SVC(kernel=kernel, probability=True, C=C, gamma=gamma)
@@ -1107,7 +1112,7 @@ def cross_validate_svm_fast(
             # std_auc = np.std(aucs)
             lo, hi = mean_confidence_interval(aucs_test)
 
-            label = f"Mean ROC Test (Median AUC = {np.median(aucs_test):.2f}, 95% CI [{lo:.4f}, {hi:.4f}] )"
+            label = f"Median ROC Test (Median AUC = {np.median(aucs_test):.2f}, 95% CI [{lo:.4f}, {hi:.4f}] )"
             # if len(aucs_test) <= 2:
             #     label = r"Mean ROC (Median AUC = %0.2f)" % np.median(aucs_test)
             ax_roc_merge.plot(mean_fpr_test, mean_tpr_test, label=label, lw=2, alpha=1, color="black")
@@ -1120,7 +1125,7 @@ def cross_validate_svm_fast(
             # std_auc = np.std(aucs)
             lo, hi = mean_confidence_interval(aucs_train)
 
-            label = f"Mean ROC Training (Median AUC = {np.median(aucs_train):.2f}, 95% CI [{lo:.4f}, {hi:.4f}] )"
+            label = f"Median ROC Training (Median AUC = {np.median(aucs_train):.2f}, 95% CI [{lo:.4f}, {hi:.4f}] )"
             # if len(aucs_train) <= 2:
             #     label = r"Mean ROC (Median AUC = %0.2f)" % np.median(aucs_train)
             ax_roc_merge.plot(
