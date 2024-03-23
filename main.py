@@ -33,8 +33,10 @@ def main(
             for steps in steps_list:
                 slug = "_".join(steps)
                 for clf in ["rbf"]:
-                    for i_day in [1, 6]:
+                    for i_day in [1, 2, 3, 4, 5, 6, 7]:
                         for a_day in [1, 2, 3, 4, 5, 6, 7]:
+                            if i_day >= a_day:
+                                continue
                             for cv in ["RepeatedKFold"]:
                                 for dataset in [
                                     delmas_dir_mrnn,

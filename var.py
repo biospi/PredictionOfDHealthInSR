@@ -44,28 +44,13 @@ from utils.Utils import anscombe
 
 parameters = {
     "C": [
-        1.00000000e-03,
-        4.64158883e-03,
-        2.15443469e-02,
-        1.00000000e-01,
-        4.64158883e-01,
-        2.15443469e00,
-        1.00000000e01,
-        4.64158883e01,
-        2.15443469e02,
-        1.00000000e03,
+        1.00000000e-10, 1.66810054e-09, 2.78255940e-08, 4.64158883e-07,
+        7.74263683e-06, 1.29154967e-04, 2.15443469e-03, 3.59381366e-02
     ],
     "gamma": [
-        1.00000000e-03,
-        4.64158883e-03,
-        2.15443469e-02,
-        1.00000000e-01,
-        4.64158883e-01,
-        2.15443469e00,
-        1.00000000e01,
-        4.64158883e01,
-        2.15443469e02,
-        1.00000000e03,
+        1.00000000e-10, 1.66810054e-08, 2.78255940e-06, 4.64158883e-04,
+        7.74263683e-02, 1.29154967e+01, 2.15443469e+03, 3.59381366e+05,
+        5.99484250e+07, 1.00000000e+10
     ],
 }
 
@@ -449,10 +434,10 @@ def show_sorted_transponders(transponders, farm, data_folder):
 if __name__ == "__main__":
     # Define the range of values for C and Gamma
     C_range = np.logspace(
-        -3, 3, 10
+        -10, 1, 10
     )  # From 0.001 to 1000, with 7 values spaced logarithmically
     gamma_range = np.logspace(
-        -3, 3, 10
+        -10, 10, 10
     )  # From 0.001 to 1000, with 7 values spaced logarithmically
 
     # Create a dictionary parameter grid to be passed to GridSearchCV
