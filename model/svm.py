@@ -695,13 +695,13 @@ def fold_worker(
             np.concatenate((y_train, y_test), axis=0),
             list(np.arange(len(X_train))),
             np.concatenate((meta_train, meta_test), axis=0),
-            clf,
+            clf.best_estimator_,
             days,
             steps,
             ifold,
             export_fig_as_pdf,
         )
-        plot_learning_curves(clf, X, y, ifold, out_dir / "testing" / str(ifold))
+        plot_learning_curves(clf.best_estimator_, X, y, ifold, out_dir / "testing" / str(ifold))
 
     accuracy = balanced_accuracy_score(y_test, y_pred_test)
     precision, recall, fscore, support = precision_recall_fscore_support(y_test, y_pred_test)
