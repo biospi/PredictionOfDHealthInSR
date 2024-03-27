@@ -10,7 +10,7 @@ def main(
     exp_temporal: bool = False,
     exp_cross_farm: bool = False,
     weather_exp: bool = False,
-    regularasisation_exp: bool = True,
+    regularisation_exp: bool = True,
     output_dir: Path = Path("output"),
     delmas_dir_mrnn: Path = Path("datasets/delmas_dataset4_mrnn_7day"),
     cedara_dir_mrnn: Path = Path("datasets/cedara_datasetmrnn7_23"),
@@ -24,7 +24,7 @@ def main(
         output_dir: Output directory
     """
 
-    if regularasisation_exp:
+    if regularisation_exp:
         print("regularisation test....")
         steps_list = [
             ["QN", "ANSCOMBE", "LOG"]
