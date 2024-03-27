@@ -434,15 +434,15 @@ def show_sorted_transponders(transponders, farm, data_folder):
 
 if __name__ == "__main__":
     # Define the range of values for C and Gamma
-    C_range = np.logspace(
-        -100, 1, 20
-    )  # From 0.001 to 1000, with 7 values spaced logarithmically
-    gamma_range = np.logspace(
-        -100, 100, 20
-    )  # From 0.001 to 1000, with 7 values spaced logarithmically
-
-    # Create a dictionary parameter grid to be passed to GridSearchCV
-    parameters = {"C": C_range, "gamma": gamma_range}
+    # C_range = np.logspace(
+    #     -100, 1, 20
+    # )  # From 0.001 to 1000, with 7 values spaced logarithmically
+    # gamma_range = np.logspace(
+    #     -100, 100, 20
+    # )  # From 0.001 to 1000, with 7 values spaced logarithmically
+    #
+    # # Create a dictionary parameter grid to be passed to GridSearchCV
+    # parameters = {"C": C_range, "gamma": gamma_range}
     print(parameters)
 
     # array = list(np.geomspace(1.0e-30, 1.0e-100, num=5))
