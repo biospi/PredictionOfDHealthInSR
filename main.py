@@ -68,7 +68,7 @@ def main(
                                         export_hpc_string=export_hpc_string,
                                         skip=False,
                                         enable_regularisation=True,
-                                        n_job=1,
+                                        n_job=n_job,
                                     )
 
 
