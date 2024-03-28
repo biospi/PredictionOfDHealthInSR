@@ -16,7 +16,7 @@ def main(
     cedara_dir_mrnn: Path = Path("datasets/cedara_datasetmrnn7_23"),
     n_job: int = 30,
     enable_regularisation: bool = False,
-    export_hpc_string: bool = True,
+    export_hpc_string: bool = False,
     plot_2d_space: bool = False
 ):
     """Thesis script runs all key experiments for data exploration chapter
