@@ -14,9 +14,9 @@ def main(
     output_dir: Path = Path("output"),
     delmas_dir_mrnn: Path = Path("datasets/delmas_dataset4_mrnn_7day"),
     cedara_dir_mrnn: Path = Path("datasets/cedara_datasetmrnn7_23"),
-    n_job: int = 30,
+    n_job: int = 28,
     enable_regularisation: bool = False,
-    export_hpc_string: bool = False,
+    export_hpc_string: bool = True,
     plot_2d_space: bool = False
 ):
     """Thesis script runs all key experiments for data exploration chapter
