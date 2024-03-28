@@ -10,13 +10,13 @@ def main(
     exp_temporal: bool = False,
     exp_cross_farm: bool = False,
     weather_exp: bool = False,
-    regularisation_exp: bool = False,
+    regularisation_exp: bool = True,
     output_dir: Path = Path("output"),
     delmas_dir_mrnn: Path = Path("datasets/delmas_dataset4_mrnn_7day"),
     cedara_dir_mrnn: Path = Path("datasets/cedara_datasetmrnn7_23"),
     n_job: int = 5,
-    enable_regularisation: bool = False,
-    export_hpc_string: bool = False,
+    enable_regularisation: bool = True,
+    export_hpc_string: bool = True,
     plot_2d_space: bool = False
 ):
     """Thesis script runs all key experiments for data exploration chapter
@@ -33,8 +33,8 @@ def main(
             for steps in steps_list:
                 slug = "_".join(steps)
                 for clf in ["rbf"]:
-                    for i_day in [6]:
-                        for a_day in [7]:
+                    for i_day in [1,2,3,4,5,6]:
+                        for a_day in [1,2,3,4,5,6,7]:
                             if i_day >= a_day:
                                 continue
                             for cv in ["RepeatedKFold"]:
@@ -63,7 +63,7 @@ def main(
                                         ],
                                         study_id=farm_id,
                                         export_fig_as_pdf=False,
-                                        plot_2d_space=True,
+                                        plot_2d_space=plot_2d_space,
                                         pre_visu=False,
                                         export_hpc_string=export_hpc_string,
                                         skip=False,

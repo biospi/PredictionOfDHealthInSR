@@ -916,9 +916,9 @@ def cross_validate_svm_fast(
         if kernel in ["linear", "rbf"]:
             if enable_regularisation:
                 print("Grid search...")
-                svc = SVC(kernel=kernel, probability=True)
-                parameters["kernel"] = [kernel]
-                clf = GridSearchCV(svc, parameters, return_train_score=True, cv=10, scoring='roc_auc', n_jobs=-1)
+                svc = SVC(probability=True)
+                # parameters["kernel"] = [kernel]
+                clf = GridSearchCV(svc, parameters, return_train_score=True, cv=5, scoring='roc_auc', n_jobs=-1)
             else:
                 if C is not None and gamma is not None:
                     clf = SVC(kernel=kernel, probability=True, C=C, gamma=gamma)
