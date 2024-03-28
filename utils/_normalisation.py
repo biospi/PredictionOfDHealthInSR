@@ -3,7 +3,6 @@ from datetime import datetime, timedelta
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
-from BaselineRemoval import BaselineRemoval
 from plotly.subplots import make_subplots
 from sklearn.base import TransformerMixin, BaseEstimator
 from sklearn.utils import check_array
@@ -190,47 +189,6 @@ def normalize(X, out_dir, output_graph, enable_qn_peak_filter, animal_ids, label
 
     df_norm = np.array(qnorm_samples)
     return df_norm
-
-
-class BaseLineScaler(TransformerMixin, BaseEstimator):
-    def __init__(self, norm="q", *, out_dir=None, copy=True, center_by_sample=False):
-        self.out_dir = out_dir
-        self.norm = norm
-        self.copy = copy
-        self.center_by_sample = center_by_sample
-
-    def fit(self, X, y=None):
-        """Do nothing and return the estimator unchanged
-
-        This method is just there to implement the usual API and hence
-        work in pipelines.
-
-        Parameters
-        ----------
-        X : array-like
-        """
-        self._validate_data(X, accept_sparse="csr")
-        return self
-
-    def transform(self, X, copy=None):
-        """Center data
-
-        Parameters
-        ----------
-        X : {array-like, sparse matrix}, shape [n_samples, n_features]
-            The data to normalize, row by row. scipy.sparse matrices should be
-            in CSR format to avoid an un-necessary copy.
-        copy : bool, optional (default: None)
-            Copy the input X or not.
-        """
-        # copy = copy if copy is not None else self.copy
-        # X = check_array(X, accept_sparse='csr')
-        X_br = np.ones(X.shape)
-        X_br[:] = np.nan
-        for i in range(X.shape[0]):
-            X_br[i, :] = BaselineRemoval(X[i, :]).ZhangFit()
-            # X_br[i, :] = BaselineRemoval(X[i, :]).ModPoly(6)
-        return X_br
 
 
 class CenterScaler(TransformerMixin, BaseEstimator):

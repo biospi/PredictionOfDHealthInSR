@@ -29,14 +29,10 @@ source goat/bin/activate
 ```bash
 make environment
 ```
-6) Activate the environment
-```bash
-source wynd/bin/activate
-```
 
-7) Replicate the paper results
+6) Replicate the paper results
 ```bash
-source main.py
+python main.py
 ```
 
 
@@ -96,9 +92,9 @@ Options:
 ```bash
 module load tools/git/2.18.0
 module load languages/anaconda3/3.7
-conda create --prefix /user/work/fo18103/PredictionOfHelminthsInfection/vgoat python=3.7
-conda activate /user/work/fo18103/PredictionOfHelminthsInfection/vgoat
-export PATH=/user/work/fo18103/PredictionOfHelminthsInfection/vgoat/bin/:$PATH
+conda create --prefix /user/work/fo18103/PredictionOfDHealthInSR/vgoat python=3.7
+conda activate /user/work/fo18103/PredictionOfDHealthInSR/vgoat
+export PATH=/user/work/fo18103/PredictionOfDHealthInSR/vgoat/bin/:$PATH
 python -m pip install --upgrade pip
 make environment
 ```

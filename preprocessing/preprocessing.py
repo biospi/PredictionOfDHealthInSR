@@ -10,7 +10,7 @@ from sklearn.preprocessing import StandardScaler, MinMaxScaler, Normalizer
 from cwt._cwt import STFT, CWT, CWTVisualisation, DWT
 
 from utils._anscombe import Anscombe, Sqrt, Log
-from utils._normalisation import BaseLineScaler, CenterScaler, QuotientNormalizer
+from utils._normalisation import CenterScaler, QuotientNormalizer
 from utils.resampling import resample_s
 from utils.visualisation import plot_distribution
 
@@ -247,10 +247,7 @@ def apply_preprocessing_steps(
             ].tolist()
             df.columns = new_header
 
-        if step == "BASELINERM":
-            df.iloc[:, :-N_META] = BaseLineScaler().fit_transform(
-                df.iloc[:, :-N_META].values
-            )
+
         if step in ["STANDARDSCALER", "STDS", "STD"]:
             df.iloc[:, :-N_META] = StandardScaler(
                 with_mean=True, with_std=True
