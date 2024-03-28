@@ -4,7 +4,7 @@
 #SBATCH --job-name=goat
 #SBATCH --output=goat
 #SBATCH --error=goat
-#SBATCH --partition=short
+#SBATCH --partition=compute
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=28
