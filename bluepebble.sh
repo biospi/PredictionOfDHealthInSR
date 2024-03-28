@@ -24,7 +24,7 @@ export WORK_DIR=/user/work/fo18103/PredictionOfDHealthInSR
 
 # Change into working directory
 cd ${WORK_DIR}
-conda activate /user/work/fo18103/PredictionOfDHealthInSR/vgoat
+source goat/bin/activate
 
 # Do some stuff
 echo JOB ID: ${SLURM_JOBID}

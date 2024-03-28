@@ -93,7 +93,7 @@ Options:
 module load tools/git/2.18.0
 module load languages/anaconda3/3.7
 conda create --prefix /user/work/fo18103/PredictionOfDHealthInSR/vgoat python=3.7
-conda activate /user/work/fo18103/PredictionOfDHealthInSR/vgoat
+source goat/bin/activate
 export PATH=/user/work/fo18103/PredictionOfDHealthInSR/vgoat/bin/:$PATH
 python -m pip install --upgrade pip
 make environment
