@@ -8,13 +8,13 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=28
-#SBATCH --time=2-00:00:00
+#SBATCH --time=3-00:00:00
 #SBATCH --mem=100000M
 #SBATCH --array=1-8
 
 # Load the modules/environment
 module purge
-module load lang/python/anaconda/3.7-2019.03-tensorflow
+module load lang/python/anaconda/3.7-2019.03
 conda init
 source ~/.bashrc
 
