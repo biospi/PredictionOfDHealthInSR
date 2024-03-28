@@ -6,17 +6,17 @@ from pathlib import Path
 
 
 def main(
-    exp_main: bool = False,
+    exp_main: bool = True,
     exp_temporal: bool = False,
     exp_cross_farm: bool = False,
     weather_exp: bool = False,
-    regularisation_exp: bool = True,
+    regularisation_exp: bool = False,
     output_dir: Path = Path("output"),
     delmas_dir_mrnn: Path = Path("datasets/delmas_dataset4_mrnn_7day"),
     cedara_dir_mrnn: Path = Path("datasets/cedara_datasetmrnn7_23"),
-    n_job: int = 28,
+    n_job: int = 5,
     enable_regularisation: bool = False,
-    export_hpc_string: bool = True,
+    export_hpc_string: bool = False,
     plot_2d_space: bool = False
 ):
     """Thesis script runs all key experiments for data exploration chapter
@@ -187,7 +187,7 @@ def main(
             farm_id = "cedara"
             cv = "RepeatedKFold"
             i_day = 1
-            a_day = 2
+            a_day = 4
             main_experiment.main(
                 output_dir=output_dir
                 / "main_experiment"
@@ -250,8 +250,8 @@ def main(
             clf = "linear"
             farm_id = "cedara"
             cv = "RepeatedKFold"
-            i_day = 6
-            a_day = 7
+            i_day = 1
+            a_day = 4
             main_experiment.main(
                 output_dir=output_dir
                 / "main_experiment"

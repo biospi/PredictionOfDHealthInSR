@@ -661,11 +661,10 @@ def fold_worker(
     tprs_test.append(interp_tpr_test)
     auc_value_test = viz_roc_test.roc_auc
     print("auc test=", auc_value_test)
-    try:
+
+    if hasattr(clf, "best_estimator_"):
         print("gamma=", clf.best_estimator_._gamma)
         print("C=", clf.best_estimator_.C)
-    except Exception as e:
-        print(e)
 
     aucs_roc_test.append(auc_value_test)
 
