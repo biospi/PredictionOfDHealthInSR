@@ -33,8 +33,8 @@ def main(
             for steps in steps_list:
                 slug = "_".join(steps)
                 for clf in ["rbf"]:
-                    for i_day in [1, 6]:
-                        for a_day in [2, 4, 7]:
+                    for i_day in [6]:
+                        for a_day in [7]:
                             if i_day >= a_day:
                                 continue
                             for cv in ["RepeatedKFold"]:

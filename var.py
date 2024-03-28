@@ -48,11 +48,7 @@ parameters = {
        3.35981829e-058, 6.95192796e-053, 1.43844989e-047, 2.97635144e-042,
        6.15848211e-037, 1.27427499e-031, 2.63665090e-026, 5.45559478e-021,
        1.12883789e-015, 2.33572147e-010, 4.83293024e-005, 1.00000000e+001],
-    "gamma": [1.00000000e-100, 3.35981829e-090, 1.12883789e-079, 3.79269019e-069,
-       1.27427499e-058, 4.28133240e-048, 1.43844989e-037, 4.83293024e-027,
-       1.62377674e-016, 5.45559478e-006, 1.83298071e+005, 6.15848211e+015,
-       2.06913808e+026, 6.95192796e+036, 2.33572147e+047, 7.84759970e+057,
-       2.63665090e+068, 8.85866790e+078, 2.97635144e+089, 1.00000000e+100],
+    "gamma": [1e-100, 6.158482110660179e-85, 3.7926901907322695e-69, 2.3357214690901023e-53, 1.4384498882876541e-37, 8.858667904100796e-22, 5.455594781168425e-06, 33598182862.83788, 2.0691380811147647e+26, 1.2742749857031426e+42, 7.847599703514558e+57, 4.8329302385716535e+73, 2.9763514416312156e+89, 1.8329807108323475e+105, 1.128837891684693e+121, 6.951927961775535e+136, 4.281332398719291e+152, 2.6366508987304307e+168, 1.6237767391887442e+184, 1e+200],
 }
 
 
@@ -434,16 +430,16 @@ def show_sorted_transponders(transponders, farm, data_folder):
 
 if __name__ == "__main__":
     # Define the range of values for C and Gamma
-    # C_range = np.logspace(
-    #     -100, 1, 20
-    # )  # From 0.001 to 1000, with 7 values spaced logarithmically
-    # gamma_range = np.logspace(
-    #     -100, 100, 20
-    # )  # From 0.001 to 1000, with 7 values spaced logarithmically
-    #
+    C_range = np.logspace(
+        -100, 1, 20
+    )  # From 0.001 to 1000, with 7 values spaced logarithmically
+    gamma_range = np.logspace(
+        -100, 200, 20
+    )  # From 0.001 to 1000, with 7 values spaced logarithmically
+
     # # Create a dictionary parameter grid to be passed to GridSearchCV
     # parameters = {"C": C_range, "gamma": gamma_range}
-    print(parameters)
+    print(list(gamma_range))
 
     # array = list(np.geomspace(1.0e-30, 1.0e-100, num=5))
     # print(array[::])
