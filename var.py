@@ -43,9 +43,9 @@ from utils.Utils import anscombe
 # }
 
 parameters = [
-  {'C': [0.000001, 0.00001, 0.0001, 0.001, 0.01, 0.1, 1, 10, 100, 1000], 'kernel': ['linear']},
-  {'C': [0.000001, 0.00001, 0.0001, 0.001, 0.01, 0.1, 1, 10, 100, 1000], 'gamma': ['scale'], 'kernel': ['rbf']},
- ]
+    {"C": list(np.logspace(-100, 100, 50)), "kernel": ["linear"]},
+    {"C": list(np.logspace(-100, 100, 50)), "gamma": ["scale"], "kernel": ["rbf"]},
+]
 
 # parameters = [
 #   {'C': [0.0001, 100], 'kernel': ['linear']},
@@ -431,7 +431,7 @@ def show_sorted_transponders(transponders, farm, data_folder):
 if __name__ == "__main__":
     # Define the range of values for C and Gamma
     C_range = np.logspace(
-        -100, 1, 5
+        -100, 100, 20
     )  # From 0.001 to 1000, with 7 values spaced logarithmically
     gamma_range = np.logspace(
         -100, 200, 5

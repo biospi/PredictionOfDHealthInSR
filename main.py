@@ -6,7 +6,7 @@ from pathlib import Path
 
 
 def main(
-    exp_main: bool = True,
+    exp_main: bool = False,
     exp_temporal: bool = False,
     exp_cross_farm: bool = False,
     weather_exp: bool = False,
@@ -33,14 +33,14 @@ def main(
             for steps in steps_list:
                 slug = "_".join(steps)
                 for clf in ["rbf"]:
-                    for i_day in [1,2,3,4,5,6]:
+                    for i_day in [1,2,3,4,5,6,7]:
                         for a_day in [1,2,3,4,5,6,7]:
                             if i_day >= a_day:
                                 continue
                             for cv in ["RepeatedKFold"]:
                                 for dataset in [
-                                    delmas_dir_mrnn,
                                     cedara_dir_mrnn,
+                                    delmas_dir_mrnn
                                 ]:
                                     farm_id = "delmas"
                                     if "cedara" in str(dataset).lower():

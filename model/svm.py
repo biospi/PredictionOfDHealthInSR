@@ -735,8 +735,15 @@ def fold_worker(
     n_healthy = np.sum(y_test == int(class_healthy)) + np.sum(y_train == int(class_healthy))
     n_unhealthy = np.sum(y_test == int(class_unhealthy)) + np.sum(y_train == int(class_unhealthy))
 
+    if hasattr(clf, "best_estimator_"):
+        clf_kernel = clf.best_estimator_.kernel
+
+    clf_name = type(clf).__name__
+    if hasattr(clf, "best_estimator_"):
+        clf_name = type(clf.best_estimator_).__name__
+
     fold_result = {
-        "clf": type(clf).__name__,
+        "clf": clf_name,
         "days": days,
         "clf_kernel": clf_kernel,
         "cross_validation": cv_name,
