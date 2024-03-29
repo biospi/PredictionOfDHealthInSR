@@ -22,7 +22,7 @@ export WORK_DIR=/user/work/fo18103/PredictionOfDHealthInSR
 
 # Change into working directory
 cd ${WORK_DIR}
-source goat/bin/activate
+source /user/work/fo18103/PredictionOfDHealthInSR/goat/bin/activate
 
 # Do some stuff
 echo JOB ID: ${SLURM_JOBID}
