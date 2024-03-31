@@ -29,14 +29,14 @@ def main(
         steps_list = [
             ["QN", "ANSCOMBE", "LOG"]
         ]
-        for class_unhealthy_label in ["2To2"]:
+        for class_unhealthy_label in ["2To2", "2To1"]:
             for steps in steps_list:
                 slug = "_".join(steps)
                 for clf in ["rbf"]:
                     for i_day in [1,2,3,4,5,6,7]:
                         for a_day in [1,2,3,4,5,6,7]:
-                            if i_day >= a_day:
-                                continue
+                            # if i_day >= a_day:
+                            #     continue
                             for cv in ["RepeatedKFold"]:
                                 for dataset in [
                                     cedara_dir_mrnn,
