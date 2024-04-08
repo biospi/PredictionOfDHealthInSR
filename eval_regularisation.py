@@ -79,13 +79,13 @@ def regularisation_heatmap(data_dir, out_dir):
         df_data,
         "mean_train_score",
         out_dir,
-        f"GridSearch Training model:{data_dir.parent.parent.parent.name}",
+        f"GridSearch Training",
     )
     plot_fig(
         df_data,
         "mean_test_score",
         out_dir,
-        f"GridSearch Testing model:{data_dir.parent.parent.parent.name}",
+        f"GridSearch Testing",
     )
 
     # plot_fig(
