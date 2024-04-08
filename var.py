@@ -43,8 +43,8 @@ from utils.Utils import anscombe
 # }
 
 parameters = [
-    {"C": list(np.logspace(-100, 100, 50)), "kernel": ["linear"]},
-    {"C": list(np.logspace(-100, 100, 50)), "gamma": ["scale"], "kernel": ["rbf"]},
+    {"C": list(np.logspace(-50, 50, 20)), "kernel": ["linear"]},
+    {"C": list(np.logspace(-50, 50, 20)), "gamma": ["scale"], "kernel": ["rbf"]},
 ]
 
 # parameters = [
