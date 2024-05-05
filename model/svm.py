@@ -41,6 +41,12 @@ from sklearn.linear_model import LogisticRegression
 
 from var import parameters
 
+from matplotlib import rcParams
+# Set matplotlib to use Times New Roman
+rcParams['font.family'] = 'serif'
+rcParams['font.serif'] = ['Times New Roman']
+
+
 
 def downsample_df(data_frame, class_healthy, class_unhealthy):
     df_true = data_frame[data_frame["target"] == class_unhealthy]
@@ -343,7 +349,7 @@ def process_ml(
     time_freq_shape=None,
     individual_to_test=None,
     plot_2d_space=False,
-    export_fig_as_pdf=False,
+    export_fig_as_pdf=True,
     wheather_days=None,
     syhth_thresh=2,
     C=None,
@@ -865,7 +871,7 @@ def cross_validate_svm_fast(
     augment_training,
     n_job=None,
     plot_2d_space=False,
-    export_fig_as_pdf=False,
+    export_fig_as_pdf=True,
     syhth_thresh=2,
     C=None,
     gamma=None,
@@ -948,8 +954,8 @@ def cross_validate_svm_fast(
         clf_kernel = kernel
 
         plt.clf()
-        fig_roc, ax_roc = plt.subplots(1, 2, figsize=(8, 8))
-        fig_roc_merge, ax_roc_merge = plt.subplots(figsize=(8, 8))
+        fig_roc, ax_roc = plt.subplots(1, 2)
+        fig_roc_merge, ax_roc_merge = plt.subplots()
         mean_fpr_test = np.linspace(0, 1, 100)
         mean_fpr_train = np.linspace(0, 1, 100)
 
@@ -971,8 +977,8 @@ def cross_validate_svm_fast(
             for ifold, (train_index, test_index) in enumerate(
                 cross_validation_method.split(X, y)
             ):
-                idx_s = find_test_samples_with_full_synthetic(meta_columns, meta, meta[test_index], test_index, n_i=syhth_thresh)
-                test_index = idx_s
+                # idx_s = find_test_samples_with_full_synthetic(meta_columns, meta, meta[test_index], test_index, n_i=syhth_thresh)
+                # test_index = idx_s
                 info = {}
                 pool.apply_async(
                     fold_worker,
@@ -1035,40 +1041,28 @@ def cross_validate_svm_fast(
 
         info = f"X shape:{str(X.shape)} healthy:{fold_results[0]['n_healthy']} unhealthy:{fold_results[0]['n_unhealthy']} \n" \
                f" training_shape:{fold_results[0]['training_shape']} testing_shape:{fold_results[0]['testing_shape']}"
-        if kernel == "transformer":
-            for a in axis_test:
-                xdata = a["fpr"]
-                ydata = a["tpr"]
-                ax_roc[1].plot(xdata, ydata, color="tab:blue", alpha=0.3, linewidth=1)
-                ax_roc_merge.plot(xdata, ydata, color="tab:blue", alpha=0.3, linewidth=1)
 
-            for a in axis_train:
-                xdata = a["fpr"]
-                ydata = a["tpr"]
-                ax_roc[0].plot(xdata, ydata, color="tab:blue", alpha=0.3, linewidth=1)
-                ax_roc_merge.plot(xdata, ydata, color="tab:purple", alpha=0.3, linewidth=1)
-        else:
-            for n, a in enumerate(axis_test):
-                f, ax = a.figure_, a.ax_
-                xdata = ax.lines[0].get_xdata()
-                ydata = ax.lines[0].get_ydata()
-                alpha = 0.3
-                lw = 1
-                # testing_shape = fold_results[n]["testing_shape"][0]
-                # if testing_shape < 150:
-                #     alpha = testing_shape / 100 / 5
-                #     lw = testing_shape / 100 / 5
-                ax_roc[1].plot(xdata, ydata, color="tab:blue", alpha=alpha, linewidth=lw)
-                ax_roc_merge.plot(xdata, ydata, color="tab:blue", alpha=lw, linewidth=lw)
+        for n, a in enumerate(axis_test):
+            f, ax = a.figure_, a.ax_
+            xdata = ax.lines[0].get_xdata()
+            ydata = ax.lines[0].get_ydata()
+            alpha = 0.3
+            lw = 1
+            # testing_shape = fold_results[n]["testing_shape"][0]
+            # if testing_shape < 150:
+            #     alpha = testing_shape / 100 / 5
+            #     lw = testing_shape / 100 / 5
+            ax_roc[1].plot(xdata, ydata, color="tab:blue", alpha=alpha, linewidth=lw)
+            ax_roc_merge.plot(xdata, ydata, color="tab:blue", alpha=lw, linewidth=lw)
 
-            for idx, a in enumerate(axis_train):
-                f, ax = a.figure_, a.ax_
-                if len(ax.lines) == 0:
-                    continue
-                xdata = ax.lines[0].get_xdata()
-                ydata = ax.lines[0].get_ydata()
-                ax_roc[0].plot(xdata, ydata, color="tab:blue", alpha=0.3, linewidth=1)
-                ax_roc_merge.plot(xdata, ydata, color="tab:purple", alpha=0.3, linewidth=1)
+        for idx, a in enumerate(axis_train):
+            f, ax = a.figure_, a.ax_
+            if len(ax.lines) == 0:
+                continue
+            xdata = ax.lines[0].get_xdata()
+            ydata = ax.lines[0].get_ydata()
+            ax_roc[0].plot(xdata, ydata, color="tab:blue", alpha=0.3, linewidth=1)
+            ax_roc_merge.plot(xdata, ydata, color="tab:purple", alpha=0.3, linewidth=1)
 
         if cv_name == "Bootstrap":
             tprs_test, fpr_test = [], []
@@ -1144,7 +1138,7 @@ def cross_validate_svm_fast(
             ax_roc_merge.set_ylim([-0.05, 1.05])
             ax_roc_merge.set_xlabel('False Positive Rate')
             ax_roc_merge.set_ylabel('True Positive Rate')
-            ax_roc_merge.set_title('Receiver operating characteristic')
+            #ax_roc_merge.set_title('Receiver operating characteristic')
             ax_roc_merge.legend(loc="lower right")
             ax_roc_merge.grid()
             fig_roc.tight_layout()
@@ -1153,11 +1147,18 @@ def cross_validate_svm_fast(
             tag = f"{type(clf).__name__}_{clf_kernel}"
             final_path = path / f"{tag}_roc_{steps}.png"
             print(final_path)
+            fig_roc.set_size_inches(6, 6)
+            fig_roc.tight_layout()
+            fig_roc.savefig(final_path, dpi=500)
             # fig_roc.savefig(final_path)
 
             final_path = path / f"{tag}_roc_{steps}_merge.png"
             print(final_path)
-            fig_roc_merge.savefig(final_path)
+
+            fig_roc_merge.set_size_inches(4.4, 4.4)
+            fig_roc_merge.tight_layout()
+            fig_roc_merge.savefig(final_path, dpi=500)
+            #fig_roc_merge.savefig(final_path)
 
             if export_fig_as_pdf:
                 final_path = path / f"{tag}_roc_{steps}.pdf"
@@ -1204,7 +1205,7 @@ def cross_validate_svm_fast(
             ax_roc_merge.set_ylim([-0.05, 1.05])
             ax_roc_merge.set_xlabel('False Positive Rate')
             ax_roc_merge.set_ylabel('True Positive Rate')
-            ax_roc_merge.set_title('Receiver operating characteristic')
+            #ax_roc_merge.set_title('Receiver operating characteristic')
             ax_roc_merge.legend(loc="lower right")
             ax_roc_merge.grid()
             fig_roc.tight_layout()
@@ -1510,7 +1511,7 @@ def process_clf(
     aucs_roc_train = []
     for i, (X_train, y_train) in enumerate(folds):
         print(f"progress {i}/{n_fold} ...")
-        clf = SVC(kernel="linear", probability=True, class_weight="balanced")
+        clf = SVC(kernel="linear", probability=True)
         # tuned_parameters = [
         #     {
         #         "kernel": ["rbf"],

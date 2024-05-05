@@ -41,6 +41,12 @@ from natsort import natsorted
 import plotly.express as px
 import scipy
 
+from matplotlib import rcParams
+# Set matplotlib to use Times New Roman
+rcParams['font.family'] = 'serif'
+rcParams['font.serif'] = ['Times New Roman']
+
+
 CSS_COLORS = {
     "NONE": "black",
     "QN_ANSCOMBE_LOG_STDS": "forestgreen",
@@ -1301,8 +1307,8 @@ def plotHeatmap(
 def mean_confidence_interval(x):
     # boot_median = [np.median(np.random.choice(x, len(x))) for _ in range(iteration)]
     x.sort()
-    lo_x_boot = np.percentile(x, 2.5)
-    hi_x_boot = np.percentile(x, 97.5)
+    lo_x_boot = np.nanpercentile(x, 2.5)
+    hi_x_boot = np.nanpercentile(x, 97.5)
     # print(lo_x_boot, hi_x_boot)
     return lo_x_boot, hi_x_boot
 
@@ -1325,8 +1331,9 @@ def plot_roc_range(
     days,
     info="None",
     tag="",
-    export_fig_as_pdf=False,
+    export_fig_as_pdf=True,
 ):
+    print("plot_roc_range...")
     ax_roc_merge.plot(
         [0, 1], [0, 1], linestyle="--", lw=2, color="orange", label="Chance", alpha=1
     )
@@ -1337,15 +1344,15 @@ def plot_roc_range(
         [0, 1], [0, 1], linestyle="--", lw=2, color="orange", label="Chance", alpha=1
     )
 
-    mean_tpr_test = np.mean(tprs_test, axis=0)
+    mean_tpr_test = np.nanmean(tprs_test, axis=0)
     mean_tpr_test[-1] = 1.0
     mean_auc_test = auc(mean_fpr_test, mean_tpr_test)
     # std_auc = np.std(aucs)
     lo, hi = mean_confidence_interval(aucs_test)
 
-    label = f"Median ROC Test (Median AUC = {np.median(aucs_test):.2f}, 95% CI [{lo:.4f}, {hi:.4f}] )"
+    label = f"Median ROC Test (Median AUC = {np.nanmedian(aucs_test):.2f}, 95% CI [{lo:.4f}, {hi:.4f}] )"
     if len(aucs_test) <= 2:
-        label = r"Mean ROC (Median AUC = %0.2f)" % np.median(aucs_test)
+        label = r"Mean ROC (Median AUC = %0.2f)" % np.nanmedian(aucs_test)
     ax[1].plot(mean_fpr_test, mean_tpr_test, color="black", label=label, lw=2, alpha=1)
 
     ax[1].set(
@@ -1360,25 +1367,25 @@ def plot_roc_range(
     ax_roc_merge.plot(
         mean_fpr_test, mean_tpr_test, color="black", label=label, lw=2, alpha=1
     )
-    ax_roc_merge.set(
-        xlim=[-0.05, 1.05],
-        ylim=[-0.05, 1.05],
-        title=f"(Training/Testing data) Receiver operating characteristic days:{days} cv:{cv_name} \n info:{info}",
-    )
+    # ax_roc_merge.set(
+    #     xlim=[-0.05, 1.05],
+    #     ylim=[-0.05, 1.05],
+    #     title=f"(Training/Testing data) Receiver operating characteristic days:{days} cv:{cv_name} \n info:{info}",
+    # )
     ax_roc_merge.set_xlabel("False positive rate")
     ax_roc_merge.set_ylabel("True positive rate")
     ax_roc_merge.legend(loc="lower right")
     # fig.show()
 
-    mean_tpr_train = np.mean(tprs_train, axis=0)
+    mean_tpr_train = np.nanmean(tprs_train, axis=0)
     mean_tpr_train[-1] = 1.0
     mean_auc_train = auc(mean_fpr_train, mean_tpr_train)
     # std_auc = np.std(aucs)
     lo, hi = mean_confidence_interval(aucs_train)
 
-    label = f"Median ROC Training (Median AUC = {np.median(aucs_train):.2f}, 95% CI [{lo:.4f}, {hi:.4f}] )"
+    label = f"Median ROC Training (Median AUC = {np.nanmedian(aucs_train):.2f}, 95% CI [{lo:.4f}, {hi:.4f}] )"
     if len(aucs_train) <= 2:
-        label = r"Median ROC (Median AUC = %0.2f)" % np.median(aucs_train)
+        label = r"Median ROC (Median AUC = %0.2f)" % np.nanmedian(aucs_train)
     ax[0].plot(
         mean_fpr_train, mean_tpr_train, color="black", label=label, lw=2, alpha=1
     )
@@ -1395,11 +1402,11 @@ def plot_roc_range(
     ax_roc_merge.plot(
         mean_fpr_train, mean_tpr_train, color="red", label=label, lw=2, alpha=1
     )
-    ax_roc_merge.set(
-        xlim=[-0.05, 1.05],
-        ylim=[-0.05, 1.05],
-        title=f"(Training data) Receiver operating characteristic days:{days} cv:{cv_name} \n info:{info}",
-    )
+    # ax_roc_merge.set(
+    #     xlim=[-0.05, 1.05],
+    #     ylim=[-0.05, 1.05],
+    #     title=f"(Training data) Receiver operating characteristic days:{days} cv:{cv_name} \n info:{info}",
+    # )
     ax_roc_merge.legend(loc="lower right")
 
     fig.tight_layout()
@@ -1409,24 +1416,27 @@ def plot_roc_range(
     # print(final_path)
     # fig.savefig(final_path)
 
+    fig_roc_merge.set_size_inches(6, 6)
+    fig_roc_merge.tight_layout()
+
     final_path = path / f"{tag}_roc_{classifier_name}_merge.png"
     print(final_path)
-    fig_roc_merge.savefig(final_path)
+    fig_roc_merge.savefig(final_path, dpi=500)
 
     filepath = out_dir.parent / f"{out_dir.stem}_{tag}_roc_{classifier_name}_merge.png"
     print(filepath)
+    fig_roc_merge.savefig(final_path, dpi=500)
+
+    #if export_fig_as_pdf:
+    final_path = path / f"{tag}_roc_{classifier_name}_merge.pdf"
+    print(final_path)
+    fig_roc_merge.savefig(final_path)
+
+    filepath = (
+        out_dir.parent / f"{out_dir.stem}_{tag}_roc_{classifier_name}_merge.pdf"
+    )
+    print(filepath)
     fig_roc_merge.savefig(filepath)
-
-    if export_fig_as_pdf:
-        final_path = path / f"{tag}_roc_{classifier_name}_merge.pdf"
-        print(final_path)
-        fig_roc_merge.savefig(final_path)
-
-        filepath = (
-            out_dir.parent / f"{out_dir.stem}_{tag}_roc_{classifier_name}_merge.pdf"
-        )
-        print(filepath)
-        fig_roc_merge.savefig(filepath)
     # filepath = out_dir.parent / f"{out_dir.stem}_{tag}_roc_{classifier_name}.png"
     # print(filepath)
     # fig.savefig(filepath)
@@ -3452,7 +3462,7 @@ def plot_ml_report_final_abs(output_dir):
                     color = values[0]
 
                 try:
-                    label_ = f"|{c} <i>p_value={p_values[k]:.6f}</i>"
+                    label_ = f"|{c} <i>p_value={p_values[k]:.8f}</i>"
                 except IndexError as e:
                     print(e)
                     label_ = f"|{c}"

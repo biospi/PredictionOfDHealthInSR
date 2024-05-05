@@ -152,7 +152,7 @@ def main(
     save_model: bool = False,
     resolution: float = None,
     plot_2d_space: bool = False,
-    export_fig_as_pdf: bool = False,
+    export_fig_as_pdf: bool = True,
     skip: bool = False,
     enable_regularisation: bool = True,
     export_hpc_string: bool = False,
