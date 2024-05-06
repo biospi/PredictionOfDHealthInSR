@@ -2089,27 +2089,30 @@ def plot_high_dimension_db(
     """
     print(f"plot_high_dimension_db {ifold}")
     try:
-        db = DBPlot(clf)
-        db.fit(X, y, training_indices=train_index)
-        fig, ax = plt.subplots(figsize=(9.20, 9.20))
-        db.plot(
-            ax, generate_testpoints=True, meta=meta
-        )  # set generate_testpoints=False to speed up plotting
-        models_visu_dir = (
-            out_dir
-            / "models_visu_pca"
-            / f"{type(clf).__name__}_{clf.kernel}_{days}_{steps}"
-        )
-        models_visu_dir.mkdir(parents=True, exist_ok=True)
-        filepath = models_visu_dir / f"{ifold}.png"
-        print(filepath)
+        # db = DBPlot(clf)
+        # db.fit(X, y, training_indices=train_index)
+        # fig, ax = plt.subplots()
+        # db.plot(
+        #     ax, generate_testpoints=True, meta=meta
+        # )  # set generate_testpoints=False to speed up plotting
+        # models_visu_dir = (
+        #     out_dir
+        #     / "models_visu_pca"
+        #     / f"{type(clf).__name__}_{clf.kernel}_{days}_{steps}"
+        # )
+        # models_visu_dir.mkdir(parents=True, exist_ok=True)
+        # filepath = models_visu_dir / f"{ifold}.png"
+        # print(filepath)
+        # # fig.tight_layout()
+        # fig.set_size_inches(7, 7)
         # fig.tight_layout()
-        fig.savefig(filepath)
-        plot_learning_curves(clf, X, y, ifold, models_visu_dir)
+        # fig.savefig(filepath, dpi=500)
+
+
         db = DBPlot(clf, dimensionality_reduction=PLSRegression(n_components=2))
         db.fit(X, y, training_indices=train_index)
-        fig, ax = plt.subplots(figsize=(8.20, 8.20))
-        _, l1, l2 = db.plot(
+        fig, ax = plt.subplots()
+        _, l1, _ = db.plot(
             ax, generate_testpoints=True, meta=meta
         )  # set generate_testpoints=False to speed up plotting
         models_visu_dir = (
@@ -2121,13 +2124,15 @@ def plot_high_dimension_db(
         filepath = models_visu_dir / f"{ifold}.png"
         print(filepath)
         # fig.tight_layout()
+        fig.set_size_inches(7, 7)
+        fig.tight_layout()
         fig.savefig(
             filepath,
             bbox_extra_artists=(
-                l1,
-                l2,
+                l1
             ),
             bbox_inches="tight",
+            dpi=500
         )
         if export_fig_as_pdf:
             filepath = models_visu_dir / f"{ifold}.pdf"
@@ -2135,12 +2140,12 @@ def plot_high_dimension_db(
             fig.savefig(
                 filepath,
                 bbox_extra_artists=(
-                    l1,
-                    l2,
+                    l1
                 ),
                 bbox_inches="tight",
+                dpi=500
             )
-
+        plot_learning_curves(clf, X, y, ifold, models_visu_dir)
         # plot_learning_curves(clf, X, y, ifold, models_visu_dir)
     except Exception as e:
         print(e)

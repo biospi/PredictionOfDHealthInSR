@@ -11,13 +11,13 @@ def main(
     exp_cross_farm: bool = False,
     weather_exp: bool = False,
     regularisation_exp: bool = False,
-    output_dir: Path = Path("output_paper"),
+    output_dir: Path = Path("output_paper_pdf_6"),
     delmas_dir_mrnn: Path = Path("datasets/delmas_dataset4_mrnn_7day"),
     cedara_dir_mrnn: Path = Path("datasets/cedara_datasetmrnn7_23"),
     n_job: int = 5,
     enable_regularisation: bool = False,
     export_hpc_string: bool = False,
-    plot_2d_space: bool = False
+    plot_2d_space: bool = True
 ):
     """Thesis script runs all key experiments for data exploration chapter
     Args:\n
@@ -168,7 +168,6 @@ def main(
                 class_unhealthy_label
             ],
             study_id=farm_id,
-            export_fig_as_pdf=False,
             plot_2d_space=plot_2d_space,
             pre_visu=False,
             export_hpc_string=export_hpc_string,
@@ -199,7 +198,6 @@ def main(
                 class_unhealthy_label
             ],
             study_id=farm_id,
-            export_fig_as_pdf=False,
             plot_2d_space=plot_2d_space,
             pre_visu=False,
             export_hpc_string=export_hpc_string,
@@ -232,7 +230,6 @@ def main(
                 class_unhealthy_label
             ],
             study_id=farm_id,
-            export_fig_as_pdf=False,
             plot_2d_space=plot_2d_space,
             pre_visu=False,
             export_hpc_string=export_hpc_string,
@@ -264,7 +261,6 @@ def main(
         #         class_unhealthy_label
         #     ],
         #     study_id=farm_id,
-        #     export_fig_as_pdf=False,
         #     plot_2d_space=plot_2d_space,
         #     pre_visu=False,
         #     export_hpc_string=export_hpc_string,
@@ -284,8 +280,7 @@ def main(
             / "2To2",
             dataset_folder=delmas_dir_mrnn,
             n_imputed_days=i,
-            n_activity_days=n_a,
-            export_fig_as_pdf=False,
+            n_activity_days=n_a
         )
 
         # i = 7
