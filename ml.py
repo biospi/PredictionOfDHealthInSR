@@ -151,7 +151,7 @@ def main(
     individual_to_test: List[str] = [],
     save_model: bool = False,
     resolution: float = None,
-    plot_2d_space: bool = False,
+    plot_2d_space: bool = True,
     export_fig_as_pdf: bool = True,
     skip: bool = False,
     enable_regularisation: bool = True,

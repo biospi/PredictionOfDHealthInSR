@@ -18,6 +18,7 @@ pydotplus==2.0.2
 graphviz==0.20
 importlib-metadata==4.12
 colour
+kaleido
 
 
 

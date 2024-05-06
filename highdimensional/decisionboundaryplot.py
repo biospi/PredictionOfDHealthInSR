@@ -503,6 +503,7 @@ class DBPlot(BaseEstimator):
         # blue 1to1
         # green 2to2
         if legend:
+            markersize = 12
             legend_elements = [
                 Line2D(
                     [0],
@@ -511,7 +512,7 @@ class DBPlot(BaseEstimator):
                     color="w",
                     label="Estimated decision boundary keypoints",
                     markerfacecolor="c",
-                    markersize=15,
+                    markersize=markersize,
                 ),
                 Line2D(
                     [0],
@@ -520,7 +521,7 @@ class DBPlot(BaseEstimator):
                     color="w",
                     label="Training data healthy",
                     markerfacecolor="b",
-                    markersize=15,
+                    markersize=markersize,
                 ),
                 Line2D(
                     [0],
@@ -529,7 +530,7 @@ class DBPlot(BaseEstimator):
                     color="w",
                     label="Testing data healthy",
                     markerfacecolor="b",
-                    markersize=15,
+                    markersize=markersize,
                 ),
                 Line2D(
                     [0],
@@ -538,7 +539,7 @@ class DBPlot(BaseEstimator):
                     color="w",
                     label="Training data unhealthy",
                     markerfacecolor="g",
-                    markersize=15,
+                    markersize=markersize,
                 ),
                 Line2D(
                     [0],
@@ -547,7 +548,7 @@ class DBPlot(BaseEstimator):
                     color="w",
                     label="Testing data unhealthy",
                     markerfacecolor="g",
-                    markersize=15,
+                    markersize=markersize,
                 ),
                 Line2D(
                     [0],
@@ -556,36 +557,36 @@ class DBPlot(BaseEstimator):
                     color="w",
                     label="Miss-classification",
                     markerfacecolor="r",
-                    markersize=15,
+                    markersize=markersize,
                 ),
             ]
 
-            legend0 = mplt.legend(handles=legend_elements, loc="lower center", ncol=2, bbox_to_anchor=(0.5, -0.20))
+            legend0 = mplt.legend(handles=legend_elements, loc="upper center", ncol=2, bbox_to_anchor=(0., 1.02, 1., .102))
 
             # label data points with their indices
-            colors = mplt.cm.twilight(np.linspace(0, 1, 12))
-            map_color = {1: colors[0],
-                         2: colors[1],
-                         3: colors[2],
-                         4: colors[3],
-                         5: colors[4],
-                         6: colors[5],
-                         7: colors[6],
-                         8: colors[7],
-                         9: colors[8],
-                         10: colors[9],
-                         11: colors[10],
-                         12: colors[11]}
-            legend_elements = []
-            for k, v in map_color.items():
-                legend_elements.append(Patch(facecolor=v, edgecolor="black", alpha=0.6,
-                                             label=datetime.date(1900, k, 1).strftime('%B')))
+            #colors = mplt.cm.twilight(np.linspace(0, 1, 12))
+            # map_color = {1: colors[0],
+            #              2: colors[1],
+            #              3: colors[2],
+            #              4: colors[3],
+            #              5: colors[4],
+            #              6: colors[5],
+            #              7: colors[6],
+            #              8: colors[7],
+            #              9: colors[8],
+            #              10: colors[9],
+            #              11: colors[10],
+            #              12: colors[11]}
+            #legend_elements = []
+            # for k, v in map_color.items():
+            #     legend_elements.append(Patch(facecolor=v, edgecolor="black", alpha=0.6,
+            #                                  label=datetime.date(1900, k, 1).strftime('%B')))
 
-            legend1 = mplt.legend(handles=legend_elements, ncol=int(len(legend_elements) / 2), loc='upper center',
-                                  bbox_to_anchor=(0., 1.02, 1., .102))
+            # legend1 = mplt.legend(handles=legend_elements, ncol=int(len(legend_elements) / 2), loc='upper center',
+            #                       bbox_to_anchor=(0., 1.02, 1., .102))
 
             ax.add_artist(legend0)
-            ax.add_artist(legend1)
+            # ax.add_artist(legend1)
             ax.set_xlabel("PCA component 1")
             ax.set_ylabel("PCA component 2")
             if isinstance(self.dimensionality_reduction, PLSRegression):
@@ -684,27 +685,27 @@ class DBPlot(BaseEstimator):
             )
 
         # months = [map_color[int(x.split(' ')[2].split('/')[1])] for x in meta]
-        for i in range(len(self.X2d)):
-            data = meta[i]
-            label = data[0]
-            id = int(str(int(data[1]))[-3:])
-            imputed_days = data[2]
-            date = data[3]
-            health = data[4]
-            target = data[5]
-            month = int(date.split('/')[1])
-            text_ = f"{label}"
-            t = ax.text(
-                self.X2d[i, 0] + (self.X2d_xmax - self.X2d_xmin) * 0.5e-2 * 5,
-                self.X2d[i, 1] + (self.X2d_ymax - self.X2d_ymin) * 0.5e-2 * 5,
-                text_,
-                # fontsize=12,
-                weight='bold',
-                size=6,
-                color="white",
-                zorder=4
-            )
-            t.set_bbox(dict(facecolor=map_color[month], alpha=0.5, edgecolor=map_color[month]))
+        # for i in range(len(self.X2d)):
+        #     data = meta[i]
+        #     label = data[0]
+        #     id = int(str(int(data[1]))[-3:])
+        #     imputed_days = data[2]
+        #     date = data[3]
+        #     health = data[4]
+        #     target = data[5]
+        #     month = int(date.split('/')[1])
+        #     text_ = f"{label}"
+            # t = ax.text(
+            #     self.X2d[i, 0] + (self.X2d_xmax - self.X2d_xmin) * 0.5e-2 * 5,
+            #     self.X2d[i, 1] + (self.X2d_ymax - self.X2d_ymin) * 0.5e-2 * 5,
+            #     text_,
+            #     # fontsize=12,
+            #     weight='bold',
+            #     size=6,
+            #     color="white",
+            #     zorder=4
+            # )
+            # t.set_bbox(dict(facecolor=map_color[month], alpha=0.5, edgecolor=map_color[month]))
 
 
         # if len(self.test_idx) == 0:
@@ -736,7 +737,7 @@ class DBPlot(BaseEstimator):
                 "Plot successfully generated! Don't forget to call the show() method to display it"
             )
         #ax.tight_layout()
-        return ax, legend0, legend1
+        return ax, legend0, None
 
     def generate_plot(
         self,

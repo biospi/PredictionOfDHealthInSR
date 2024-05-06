@@ -7,11 +7,11 @@ from pathlib import Path
 
 def main(
     exp_main: bool = True,
-    exp_temporal: bool = False,
+    exp_temporal: bool = True,
     exp_cross_farm: bool = False,
-    weather_exp: bool = False,
+    weather_exp: bool = True,
     regularisation_exp: bool = False,
-    output_dir: Path = Path("output_paper_pdf_6"),
+    output_dir: Path = Path("output_paper_pdf_8"),
     delmas_dir_mrnn: Path = Path("datasets/delmas_dataset4_mrnn_7day"),
     cedara_dir_mrnn: Path = Path("datasets/cedara_datasetmrnn7_23"),
     n_job: int = 5,
@@ -75,15 +75,15 @@ def main(
         print("experiment 1 (weather): main pipeline")
 
         steps_list = [
-            ["WINDSPEED", "STDS"],
-            ["QN", "ANSCOMBE", "LOG", "WINDSPEED", "STDS"],
-            ["HUMIDITY", "STDS"],
-            ["QN", "ANSCOMBE", "LOG", "HUMIDITY", "STDS"],
-            ["TEMPERATURE", "STDS"],
-            ["QN", "ANSCOMBE", "LOG", "TEMPERATURE", "STDS"],
-            #["RAINFALL", "STDS"],
-            # ["QN", "ANSCOMBE", "LOG", "RAINFALLAPPEND", "STDS"],
-            # ["QN", "ANSCOMBE", "LOG"]
+            # ["WINDSPEED", "STDS"],
+            # ["QN", "ANSCOMBE", "LOG", "WINDSPEED", "STDS"],
+            # ["HUMIDITY", "STDS"],
+            # ["QN", "ANSCOMBE", "LOG", "HUMIDITY", "STDS"],
+            # ["TEMPERATURE", "STDS"],
+            # ["QN", "ANSCOMBE", "LOG", "TEMPERATURE", "STDS"],
+            ["RAINFALL", "STDS"],
+            ["QN", "ANSCOMBE", "LOG", "RAINFALLAPPEND", "STDS"],
+            ["QN", "ANSCOMBE", "LOG"]
         ]
         for steps in steps_list:
             slug = "_".join(steps)
@@ -151,6 +151,32 @@ def main(
         cv = "RepeatedKFold"
         i_day = 7
         a_day = 7
+        # main_experiment.main(
+        #     output_dir=output_dir
+        #     / "main_experiment"
+        #     / clf
+        #     / delmas_dir_mrnn.stem
+        #     / f"{delmas_dir_mrnn.stem}_{farm_id}_{cv}_{i_day}_{a_day}_{slug}"
+        #     / class_unhealthy_label,
+        #     dataset_folder=delmas_dir_mrnn,
+        #     preprocessing_steps=steps,
+        #     n_imputed_days=i_day,
+        #     n_activity_days=a_day,
+        #     cv=cv,
+        #     classifiers=[clf],
+        #     class_unhealthy_label=[
+        #         class_unhealthy_label
+        #     ],
+        #     study_id=farm_id,
+        #     plot_2d_space=plot_2d_space,
+        #     pre_visu=False,
+        #     export_hpc_string=export_hpc_string,
+        #     skip=False,
+        #     enable_regularisation=enable_regularisation,
+        #     n_job=n_job,
+        # )
+
+        cv = "LeaveTwoOut"
         main_experiment.main(
             output_dir=output_dir
             / "main_experiment"
@@ -175,6 +201,8 @@ def main(
             enable_regularisation=enable_regularisation,
             n_job=n_job,
         )
+
+        exit()
 
         clf = "linear"
         farm_id = "cedara"
@@ -238,41 +266,41 @@ def main(
             n_job=n_job,
         )
 
-        # clf = "linear"
-        # farm_id = "cedara"
-        # cv = "RepeatedKFold"
-        # class_unhealthy_label = "2To1"
-        # i_day = 7
-        # a_day = 3
-        # main_experiment.main(
-        #     output_dir=output_dir
-        #     / "main_experiment"
-        #     / clf
-        #     / cedara_dir_mrnn.stem
-        #     / f"{cedara_dir_mrnn.stem}_{farm_id}_{cv}_{i_day}_{a_day}_{slug}"
-        #     / class_unhealthy_label,
-        #     dataset_folder=cedara_dir_mrnn,
-        #     preprocessing_steps=steps,
-        #     n_imputed_days=i_day,
-        #     n_activity_days=a_day,
-        #     cv=cv,
-        #     classifiers=[clf],
-        #     class_unhealthy_label=[
-        #         class_unhealthy_label
-        #     ],
-        #     study_id=farm_id,
-        #     plot_2d_space=plot_2d_space,
-        #     pre_visu=False,
-        #     export_hpc_string=export_hpc_string,
-        #     skip=False,
-        #     enable_regularisation=enable_regularisation,
-        #     n_job=n_job,
-        # )
+        clf = "linear"
+        farm_id = "cedara"
+        cv = "RepeatedKFold"
+        class_unhealthy_label = "2To1"
+        i_day = 7
+        a_day = 3
+        main_experiment.main(
+            output_dir=output_dir
+            / "main_experiment"
+            / clf
+            / cedara_dir_mrnn.stem
+            / f"{cedara_dir_mrnn.stem}_{farm_id}_{cv}_{i_day}_{a_day}_{slug}"
+            / class_unhealthy_label,
+            dataset_folder=cedara_dir_mrnn,
+            preprocessing_steps=steps,
+            n_imputed_days=i_day,
+            n_activity_days=a_day,
+            cv=cv,
+            classifiers=[clf],
+            class_unhealthy_label=[
+                class_unhealthy_label
+            ],
+            study_id=farm_id,
+            plot_2d_space=plot_2d_space,
+            pre_visu=False,
+            export_hpc_string=export_hpc_string,
+            skip=False,
+            enable_regularisation=enable_regularisation,
+            n_job=n_job,
+        )
 
     if exp_temporal:
         print("experiment 2: temporal validation")
-        i = 6
-        n_a = 7
+        i = 7
+        n_a = 6
         temporal_validation.main(
             output_dir=output_dir
             / "temporal_validation"

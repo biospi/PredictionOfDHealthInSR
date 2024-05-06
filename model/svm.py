@@ -348,7 +348,7 @@ def process_ml(
     batch_size=8,
     time_freq_shape=None,
     individual_to_test=None,
-    plot_2d_space=False,
+    plot_2d_space=True,
     export_fig_as_pdf=True,
     wheather_days=None,
     syhth_thresh=2,
@@ -694,19 +694,24 @@ def fold_worker(
     aucs_roc_train.append(auc_value_train)
 
     if plot_2d_space and ifold == 0:
+        model = clf
+        if hasattr(clf, "best_estimator_"):
+            model = clf.best_estimator_
+
+        print("2d testing...")
         plot_high_dimension_db(
             out_dir / "testing" / str(ifold),
             np.concatenate((X_train, X_test), axis=0),
             np.concatenate((y_train, y_test), axis=0),
             list(np.arange(len(X_train))),
             np.concatenate((meta_train, meta_test), axis=0),
-            clf.best_estimator_,
+            model,
             days,
             steps,
             ifold,
             export_fig_as_pdf,
         )
-        plot_learning_curves(clf.best_estimator_, X, y, ifold, out_dir / "testing" / str(ifold))
+        # plot_learning_curves(model, X, y, ifold, out_dir / "testing" / str(ifold))
 
     accuracy = balanced_accuracy_score(y_test, y_pred_test)
     precision, recall, fscore, support = precision_recall_fscore_support(y_test, y_pred_test)
@@ -870,7 +875,7 @@ def cross_validate_svm_fast(
     sample_dates,
     augment_training,
     n_job=None,
-    plot_2d_space=False,
+    plot_2d_space=True,
     export_fig_as_pdf=True,
     syhth_thresh=2,
     C=None,
@@ -890,32 +895,32 @@ def cross_validate_svm_fast(
         X: samples
         y: targets
     """
-    # if plot_2d_space:
-    #     for kernel in svc_kernel:
-    #         try:
-    #             if C is None or gamma is None:
-    #                 clf = SVC(kernel=kernel, probability=True)
-    #             else:
-    #                 clf = SVC(kernel=kernel, probability=True, C=C, gamma=gamma)
-    #             X_ = X[np.isin(y_h, [0, 1])]
-    #             y_ = y_h[np.isin(y_h, [0, 1])]
-    #             meta_ = meta_data_short[np.isin(y_h, [0, 1])]
-    #             clf.fit(X_, y_)
-    #             plot_high_dimension_db(
-    #                 out_dir / "training",
-    #                 X_,
-    #                 y_,
-    #                 None,
-    #                 meta_,
-    #                 clf,
-    #                 days,
-    #                 steps,
-    #                 0,
-    #                 export_fig_as_pdf
-    #             )
-    #             plot_learning_curves(clf, X_, y_, 0, out_dir / "training")
-    #         except Exception as e:
-    #             print(e)
+    if plot_2d_space:
+        for kernel in svc_kernel:
+            try:
+                if C is None or gamma is None:
+                    clf = SVC(kernel=kernel, probability=True)
+                else:
+                    clf = SVC(kernel=kernel, probability=True, C=C, gamma=gamma)
+                X_ = X[np.isin(y_h, [0, 1])]
+                y_ = y_h[np.isin(y_h, [0, 1])]
+                meta_ = meta_data_short[np.isin(y_h, [0, 1])]
+                clf.fit(X_, y_)
+                plot_high_dimension_db(
+                    out_dir / "training",
+                    X_,
+                    y_,
+                    None,
+                    meta_,
+                    clf,
+                    days,
+                    steps,
+                    0,
+                    export_fig_as_pdf
+                )
+                plot_learning_curves(clf, X_, y_, 0, out_dir / "training")
+            except Exception as e:
+                print(e)
 
     scores, scores_proba = {}, {}
 
@@ -1451,7 +1456,7 @@ def process_clf(
     output_dir,
     n_job=None,
     export_fig_as_pdf=None,
-    plot_2d_space=False
+    plot_2d_space=True
 ):
     """Trains multiple model with n 90% samples
     Args:
@@ -1500,8 +1505,8 @@ def process_clf(
 
     # results = []
     plt.clf()
-    fig_roc, ax_roc = plt.subplots(1, 2, figsize=(8.0, 8.0))
-    fig_roc_merge, ax_roc_merge = plt.subplots(figsize=(8.0, 8.0))
+    fig_roc, ax_roc = plt.subplots(1, 2)
+    fig_roc_merge, ax_roc_merge = plt.subplots()
     mean_fpr_test = np.linspace(0, 1, 100)
     tprs_test = []
     aucs_roc_test = []
@@ -1511,26 +1516,25 @@ def process_clf(
     aucs_roc_train = []
     for i, (X_train, y_train) in enumerate(folds):
         print(f"progress {i}/{n_fold} ...")
-        clf = SVC(kernel="linear", probability=True)
-        # tuned_parameters = [
-        #     {
-        #         "kernel": ["rbf"],
-        #         "gamma": ["scale", 1e-1, 1e-3, 1e-4],
-        #         "class_weight": [None, "balanced"],
-        #         "C": [0.001, 0.01, 0.1, 1, 10, 100, 1000, 10000],
-        #     },
-        #     {"kernel": ["linear"], "C": [1, 10, 100, 1000]},
-        # ]
+        #clf = SVC(kernel="rbf", probability=True)
+        tuned_parameters = [
+            {
+                "kernel": ["rbf"],
+                "gamma": ["scale", 1e-1, 1e-3, 1e-4],
+                "class_weight": [None, "balanced"],
+                "C": [0.001, 0.01, 0.1, 1, 10, 100, 1000, 10000],
+            },
+            {"kernel": ["linear"], "C": [1, 10, 100, 1000]},
+        ]
 
-        # clf = GridSearchCV(
-        #     clf_svc,
-        #     tuned_parameters,
-        #     scoring=["roc_auc", "accuracy", "precision"],
-        #     refit="accuracy",
-        #     n_jobs=-1,
-        # )
+        clf = GridSearchCV(
+            SVC(probability=True),
+            tuned_parameters,
+            scoring=["roc_auc", "accuracy", "precision"],
+            refit="accuracy",
+            n_jobs=-1,
+        )
         clf.fit(X_train.copy(), y_train.copy())
-
 
         clf_best = clf
         print("Best estimator from gridsearch=")
@@ -1548,13 +1552,16 @@ def process_clf(
         df.to_csv(filename)
 
         if plot_2d_space and i == 0:
+            model = clf
+            if hasattr(clf, "best_estimator_"):
+                model = clf.best_estimator_
             plot_high_dimension_db(
                 output_dir / "testing",
                 np.concatenate((X_train, X_test), axis=0),
                 np.concatenate((y_train, y_test), axis=0),
                 list(np.arange(len(X_train))),
                 [],
-                clf,
+                model,
                 n_activity_days,
                 steps,
                 i,
@@ -1565,26 +1572,39 @@ def process_clf(
         # y = np.array(y_train.tolist() + y_test.tolist())
         # results.append([clf_best, X, y])
 
-        viz_roc_test = plot_roc_curve(
+        # todo remove redundant
+        auc_check = plot_roc_curve(
             clf,
             X_test,
             y_test,
             label=None,
-            alpha=0.3,
+            alpha=0,
             lw=1,
             ax=ax_roc[1],
             c="tab:blue",
         )
-        _ = plot_roc_curve(
-            clf,
-            X_test,
-            y_test,
-            label=None,
-            alpha=0.3,
-            lw=1,
-            ax=ax_roc_merge,
-            c="tab:blue",
-        )
+
+        if auc_check.roc_auc > 0.5:
+            viz_roc_test = plot_roc_curve(
+                clf,
+                X_test,
+                y_test,
+                label=None,
+                alpha=0.3,
+                lw=1,
+                ax=ax_roc[1],
+                c="tab:blue",
+            )
+            _ = plot_roc_curve(
+                clf,
+                X_test,
+                y_test,
+                label=None,
+                alpha=0.3,
+                lw=1,
+                ax=ax_roc_merge,
+                c="tab:blue",
+            )
         interp_tpr_test = np.interp(mean_fpr_test, viz_roc_test.fpr, viz_roc_test.tpr)
         interp_tpr_test[0] = 0.0
         print("auc=", viz_roc_test.roc_auc)

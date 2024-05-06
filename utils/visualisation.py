@@ -2108,7 +2108,6 @@ def plot_high_dimension_db(
         # fig.tight_layout()
         # fig.savefig(filepath, dpi=500)
 
-
         db = DBPlot(clf, dimensionality_reduction=PLSRegression(n_components=2))
         db.fit(X, y, training_indices=train_index)
         fig, ax = plt.subplots()
@@ -2128,9 +2127,6 @@ def plot_high_dimension_db(
         fig.tight_layout()
         fig.savefig(
             filepath,
-            bbox_extra_artists=(
-                l1
-            ),
             bbox_inches="tight",
             dpi=500
         )
@@ -2139,9 +2135,6 @@ def plot_high_dimension_db(
             print(filepath)
             fig.savefig(
                 filepath,
-                bbox_extra_artists=(
-                    l1
-                ),
                 bbox_inches="tight",
                 dpi=500
             )
@@ -3322,8 +3315,21 @@ def plot_ml_report_final_abs(output_dir):
                         label_formated += "<br>"
                 formated_label.append(label_formated)
                 formated_label_s.append(human_readable(label_formated, df_f_, n))
-            df_f_["config"] = formated_label
-            df_f_["config_s"] = formated_label_s
+            simple_labels = []
+            for fl in formated_label:
+                if "QN_ANSCOMBE_LOG_RAINFALLAPPEND_STDS" in fl:
+                    simple_labels.append("Activity and rainfall")
+                    continue
+                if "QN_ANSCOMBE_LOG" in fl:
+                    simple_labels.append("Activity")
+                    continue
+                if "RAINFALL_STDS" in fl:
+                    simple_labels.append("Rainfall")
+                    continue
+
+
+            df_f_["config"] = simple_labels
+            df_f_["config_s"] = simple_labels
             # df_f_ = get_delta(df_f_)
             fig.append_trace(
                 px.box(df_f_, x="config_s", y="test_precision_score0").data[0],
@@ -3380,7 +3386,8 @@ def plot_ml_report_final_abs(output_dir):
             p_values = df_f_["p_value"].unique()
 
             color_data = [x.split(" ")[-1] for x in x_data]
-            imp_days_data = [x.split(" ")[0].split("=")[1] for x in x_data]
+            #imp_days_data = [x.split(" ")[0].split("=")[1] for x in x_data]
+            imp_days_data = [0] * len(x_data)
             y_data = []
             for x in df_f_["config_s"].unique():
                 y_data.append(df_f_[df_f_["config_s"] == x]["roc_auc_scores"].values)
@@ -3393,7 +3400,7 @@ def plot_ml_report_final_abs(output_dir):
                 class0 = df_f_[df_f_["config_s"] == xd]["class0"].unique()
                 class1 = df_f_[df_f_["config_s"] == xd]["class1"].unique()
                 imp_days = df_f_[df_f_["config_s"] == xd]["class1"].unique()
-                xd = " ".join(xd.split(" ")[1:])
+                xd = " ".join(xd.split(" ")[0:1])
                 class0_list.append(class0)
                 class1_list.append(class1)
                 keys = np.unique(color_data)
@@ -3459,6 +3466,7 @@ def plot_ml_report_final_abs(output_dir):
                 )
                 sec_axis.append(True)
 
+
             for k, c in enumerate(np.unique(color_data)):
                 try:
                     color = COLOR_MAP[c]
@@ -3468,6 +3476,8 @@ def plot_ml_report_final_abs(output_dir):
 
                 try:
                     label_ = f"|{c} <i>p_value={p_values[k]:.8f}</i>"
+                    if np.isnan(p_values[k]):
+                        label_ = f"|{c}"
                 except IndexError as e:
                     print(e)
                     label_ = f"|{c}"
@@ -3522,8 +3532,11 @@ def plot_ml_report_final_abs(output_dir):
             )
             sec_axis.append(False)
 
-            h_labels = df_f_["config"].values[0].split(">H=")[1].split(">")[0]
-            uh_labels = df_f_["config"].values[0].split(">UH=")[1].split(">")[0]
+            # h_labels = df_f_["config"].values[0].split(">H=")[1].split(">")[0]
+            # uh_labels = df_f_["config"].values[0].split(">UH=")[1].split(">")[0]
+
+            h_labels = "1To1"
+            uh_labels = "2To2"
 
             fig_ = make_subplots(specs=[[{"secondary_y": True}]])
 
@@ -3592,7 +3605,29 @@ def plot_ml_report_final_abs(output_dir):
             fig_.update_yaxes(title_text="Delta AUC(%)", secondary_y=True)
             fig_.update_yaxes(title_text="Sample count", secondary_y=False)
             fig_.update_xaxes(range=[-1, len(x_data) - 0.5])
+            fig_.update_layout(
+                title='Best Model AUC Comparison',
+                xaxis_title="Model",
+                yaxis_title="AUC(Delta)",
+                xaxis={'tickangle': 45},  # Rotate labels for better readability
+                showlegend=True,
+                font=dict(family="Times New Roman", size=12, color="black")
+            )
             fig_.write_html(str(filepath))
+            # Set size and DPI for the PNG export
+            width_in_inches = 6
+            height_in_inches = 7
+            dpi = 500
+
+            # Convert inches to pixels
+            width_in_pixels = width_in_inches * dpi
+            height_in_pixels = height_in_inches * dpi
+
+            # Define the file path for the PNG
+            png_filepath = str(output_dir / 'best_vs_others.png')
+
+            # Export as PNG
+            fig.write_image(png_filepath, width=width_in_pixels, height=height_in_pixels, scale=1)
 
 
 if __name__ == "__main__":
