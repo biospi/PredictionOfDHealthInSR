@@ -500,129 +500,51 @@ class DBPlot(BaseEstimator):
             alpha=0.8,
             zorder=1
         )
-        # blue 1to1
-        # green 2to2
+
         if legend:
             markersize = 12
+            fontsize = 22
+
+            # Define legend elements
             legend_elements = [
-                Line2D(
-                    [0],
-                    [0],
-                    marker="p",
-                    color="w",
-                    label="Estimated decision boundary keypoints",
-                    markerfacecolor="c",
-                    markersize=markersize,
-                ),
-                Line2D(
-                    [0],
-                    [0],
-                    marker="s",
-                    color="w",
-                    label="Training data healthy",
-                    markerfacecolor="b",
-                    markersize=markersize,
-                ),
-                Line2D(
-                    [0],
-                    [0],
-                    marker="o",
-                    color="w",
-                    label="Testing data healthy",
-                    markerfacecolor="b",
-                    markersize=markersize,
-                ),
-                Line2D(
-                    [0],
-                    [0],
-                    marker="s",
-                    color="w",
-                    label="Training data unhealthy",
-                    markerfacecolor="g",
-                    markersize=markersize,
-                ),
-                Line2D(
-                    [0],
-                    [0],
-                    marker="o",
-                    color="w",
-                    label="Testing data unhealthy",
-                    markerfacecolor="g",
-                    markersize=markersize,
-                ),
-                Line2D(
-                    [0],
-                    [0],
-                    marker="o",
-                    color="w",
-                    label="Miss-classification",
-                    markerfacecolor="r",
-                    markersize=markersize,
-                ),
+                Line2D([0], [0], marker="p", color="w", label="Estimated decision boundary keypoints",
+                       markerfacecolor="c", markersize=markersize),
+                Line2D([0], [0], marker="s", color="w", label="Training data healthy", markerfacecolor="b",
+                       markersize=markersize),
+                Line2D([0], [0], marker="o", color="w", label="Testing data healthy", markerfacecolor="b",
+                       markersize=markersize),
+                Line2D([0], [0], marker="s", color="w", label="Training data unhealthy", markerfacecolor="g",
+                       markersize=markersize),
+                Line2D([0], [0], marker="o", color="w", label="Testing data unhealthy", markerfacecolor="g",
+                       markersize=markersize),
+                Line2D([0], [0], marker="o", color="w", label="Miss-classification", markerfacecolor="r",
+                       markersize=markersize),
             ]
 
-            legend0 = mplt.legend(handles=legend_elements, loc="upper center", ncol=2, bbox_to_anchor=(0., 1.02, 1., .102))
+            # Create the legend
+            # legend0 = mplt.legend(handles=legend_elements, loc="upper center", ncol=2, bbox_to_anchor=(0, 1.02, 1., 0.2))
 
-            # label data points with their indices
-            #colors = mplt.cm.twilight(np.linspace(0, 1, 12))
-            # map_color = {1: colors[0],
-            #              2: colors[1],
-            #              3: colors[2],
-            #              4: colors[3],
-            #              5: colors[4],
-            #              6: colors[5],
-            #              7: colors[6],
-            #              8: colors[7],
-            #              9: colors[8],
-            #              10: colors[9],
-            #              11: colors[10],
-            #              12: colors[11]}
-            #legend_elements = []
-            # for k, v in map_color.items():
-            #     legend_elements.append(Patch(facecolor=v, edgecolor="black", alpha=0.6,
-            #                                  label=datetime.date(1900, k, 1).strftime('%B')))
+            # Shrink current axis by 20%
+            # box = ax.get_position()
+            # ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
+            pos = ax.get_position()
+            ax.set_position([pos.x0, pos.y0, pos.width, pos.height * 0.85])
 
-            # legend1 = mplt.legend(handles=legend_elements, ncol=int(len(legend_elements) / 2), loc='upper center',
-            #                       bbox_to_anchor=(0., 1.02, 1., .102))
+            legend0 = mplt.legend(handles=legend_elements, loc="upper center", ncol=2,  bbox_to_anchor=(0.5, 1.25), borderaxespad=0)
+
+            # Set font size for the legend
+            mplt.setp(legend0.get_texts(), fontsize=fontsize)
 
             ax.add_artist(legend0)
             # ax.add_artist(legend1)
-            ax.set_xlabel("PCA component 1")
-            ax.set_ylabel("PCA component 2")
+            ax.tick_params(axis='x', labelsize=18)  # Adjust the fontsize as needed for the x-axis
+            ax.tick_params(axis='y', labelsize=18)
+            ax.set_xlabel("PCA component 1", fontsize=22)
+            ax.set_ylabel("PCA component 2", fontsize=22)
             if isinstance(self.dimensionality_reduction, PLSRegression):
-                ax.set_xlabel("PLS component 1")
-                ax.set_ylabel("PLS component 2")
+                ax.set_xlabel("PLS component 1", fontsize=22)
+                ax.set_ylabel("PLS component 2", fontsize=22)
 
-            # plt.legend(handles=[plt.scatter([0, 1], [2, 3], marker="p", c="c").legend_elements()[0],
-            #                     plt.scatter([0, 1], [2, 3], marker="s", c="b").legend_elements()[0],
-            #                     plt.scatter([0, 1], [2, 3], marker="o", c="b").legend_elements()[0],
-            #                     plt.scatter([0, 1], [2, 3], marker="s", c="g").legend_elements()[0],
-            #                     plt.scatter([0, 1], [2, 3], marker="o", c="g").legend_elements()[0],
-            #                     plt.scatter([0, 1], [2, 3], marker="o", c="r").legend_elements()[0],
-            #                     ],
-            #            labels=[
-            #             "Estimated decision boundary keypoints",
-            #             "Training data healthy",
-            #             "Testing data healthy",
-            #             "Training data unhealthy",
-            #             "Testing data unhealthy",
-            #             "Misclassification",
-            #             ],
-            #            loc="lower right"
-            #            )
-
-            # plt.legend(
-            #     [
-            #         "Estimated decision boundary keypoints",
-            #         # "Generated test data around decision boundary",
-            #         "Training data",
-            #         "Testing data",
-            #     ],
-            #     loc="lower right",
-            #     prop={"size": 9},
-            # )
-
-        # decision boundary keypoints, in case not visible in background
         ax.scatter(
             self.decision_boundary_points_2d[:, 0],
             self.decision_boundary_points_2d[:, 1],
@@ -683,54 +605,6 @@ class DBPlot(BaseEstimator):
                 linewidth=1,
                 zorder=5
             )
-
-        # months = [map_color[int(x.split(' ')[2].split('/')[1])] for x in meta]
-        # for i in range(len(self.X2d)):
-        #     data = meta[i]
-        #     label = data[0]
-        #     id = int(str(int(data[1]))[-3:])
-        #     imputed_days = data[2]
-        #     date = data[3]
-        #     health = data[4]
-        #     target = data[5]
-        #     month = int(date.split('/')[1])
-        #     text_ = f"{label}"
-            # t = ax.text(
-            #     self.X2d[i, 0] + (self.X2d_xmax - self.X2d_xmin) * 0.5e-2 * 5,
-            #     self.X2d[i, 1] + (self.X2d_ymax - self.X2d_ymin) * 0.5e-2 * 5,
-            #     text_,
-            #     # fontsize=12,
-            #     weight='bold',
-            #     size=6,
-            #     color="white",
-            #     zorder=4
-            # )
-            # t.set_bbox(dict(facecolor=map_color[month], alpha=0.5, edgecolor=map_color[month]))
-
-
-        # if len(self.test_idx) == 0:
-        #     print("No demo performance calculated, as no testing data was specified")
-        # else:
-        #     freq = np.array(
-        #         np.unique(self.y[self.test_idx], return_counts=True)
-        #     ).T.astype(float)
-        #     imbalance = np.round(
-        #         np.max((freq[0, 1], freq[1, 1])) / len(self.test_idx), 3
-        #     )
-        #     acc_score = np.round(
-        #         accuracy_score(self.y[self.test_idx], self.y_pred[self.test_idx]), 3
-        #     )
-        #     f1 = np.round(
-        #         f1_score(self.y[self.test_idx], self.y_pred[self.test_idx]), 3
-        #     )
-        #     ax.set_title(
-        #         "Test accuracy: "
-        #         + str(acc_score)
-        #         + ", F1 score: "
-        #         + str(f1)
-        #         + ". Imbalance (max chance accuracy): "
-        #         + str(imbalance)
-        #     )
 
         if self.verbose:
             print(

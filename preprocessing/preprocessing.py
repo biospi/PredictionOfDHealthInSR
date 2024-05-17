@@ -55,24 +55,24 @@ def apply_preprocessing_steps(
     print("BEFORE STEP ->", df)
     # plotDistribution(df.iloc[:, :-N_META].values, graph_outputdir, "data_distribution_before_%s" % step_slug)
     for step in steps:
-        if step not in [
-            "ANSCOMBE",
-            "LOG",
-            "QN",
-            "CWT",
-            "CENTER",
-            "MINMAX",
-            "PCA",
-            "BASELINERM",
-            "STFT",
-            "STANDARDSCALER",
-            "DIFFAPPEND",
-            "DIFFLASTD",
-            "DIFF",
-            "DIFFLASTDAPPEND",
-            "TSNE",
-        ]:
-            warnings.warn("processing step %s does not exist!" % step)
+        # if step not in [
+        #     "ANSCOMBE",
+        #     "LOG",
+        #     "QN",
+        #     "CWT",
+        #     "CENTER",
+        #     "MINMAX",
+        #     "PCA",
+        #     "BASELINERM",
+        #     "STFT",
+        #     "STANDARDSCALER",
+        #     "DIFFAPPEND",
+        #     "DIFFLASTD",
+        #     "DIFF",
+        #     "DIFFLASTDAPPEND",
+        #     "TSNE",
+        # ]:
+        #     warnings.warn("processing step %s does not exist!" % step)
         # plotDistribution(df.iloc[:, :-N_META].values, graph_outputdir, "data_distribution_before_%s" % step)
         print("applying STEP->%s in [%s]..." % (step, step_slug.replace("_", "->")))
         if step == "TEMPERATUREAPPEND":

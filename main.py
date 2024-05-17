@@ -6,12 +6,12 @@ from pathlib import Path
 
 
 def main(
-    exp_main: bool = True,
+    exp_main: bool = False,
     exp_temporal: bool = True,
     exp_cross_farm: bool = False,
-    weather_exp: bool = True,
+    weather_exp: bool = False,
     regularisation_exp: bool = False,
-    output_dir: Path = Path("output_paper_pdf_8"),
+    output_dir: Path = Path("output_paper_pdf_20"),
     delmas_dir_mrnn: Path = Path("datasets/delmas_dataset4_mrnn_7day"),
     cedara_dir_mrnn: Path = Path("datasets/cedara_datasetmrnn7_23"),
     n_job: int = 5,
@@ -71,75 +71,6 @@ def main(
                                         n_job=1,
                                     )
 
-    if weather_exp:
-        print("experiment 1 (weather): main pipeline")
-
-        steps_list = [
-            # ["WINDSPEED", "STDS"],
-            # ["QN", "ANSCOMBE", "LOG", "WINDSPEED", "STDS"],
-            # ["HUMIDITY", "STDS"],
-            # ["QN", "ANSCOMBE", "LOG", "HUMIDITY", "STDS"],
-            # ["TEMPERATURE", "STDS"],
-            # ["QN", "ANSCOMBE", "LOG", "TEMPERATURE", "STDS"],
-            ["RAINFALL", "STDS"],
-            ["QN", "ANSCOMBE", "LOG", "RAINFALLAPPEND", "STDS"],
-            ["QN", "ANSCOMBE", "LOG"]
-        ]
-        for steps in steps_list:
-            slug = "_".join(steps)
-            for w_day in [84]:
-                for cv in ["RepeatedKFold"]:
-                        n_imputed_days = 7
-                        n_activity_days = 7
-                        main_experiment.main(
-                            output_dir=output_dir
-                            / "weather_experiment"
-                            / f"delmas_{cv}_{n_imputed_days}_{n_activity_days}_{w_day}_{slug}"
-                            / "2To2",
-                            dataset_folder=delmas_dir_mrnn,
-                            preprocessing_steps=steps,
-                            n_imputed_days=n_imputed_days, #need this for preprocessing wont be used for the weather
-                            n_activity_days=n_activity_days,
-                            n_weather_days=w_day,
-                            cv=cv,
-                            classifiers=["rbf"],
-                            class_unhealthy_label=["2To2"],
-                            study_id="delmas",
-                            export_fig_as_pdf=False,
-                            plot_2d_space=False,
-                            pre_visu=False,
-                            skip=False,
-                            enable_regularisation=enable_regularisation,
-                            n_job=n_job,
-                            weather_file=Path("weather_data/delmas_south_africa_2011-01-01_to_2015-12-31.csv")
-                        )
-                        n_imputed_days = 7
-                        n_activity_days = 7
-                        main_experiment.main(
-                            output_dir=output_dir
-                            / "weather_experiment"
-                            / f"cedara_{cv}_{0}_{0}_{w_day}_{slug}"
-                            / "2To2",
-                            dataset_folder=cedara_dir_mrnn,
-                            preprocessing_steps=steps,
-                            n_imputed_days=n_imputed_days,
-                            n_activity_days=n_activity_days,
-                            n_weather_days=w_day,
-                            class_unhealthy_label=["2To2"],
-                            cv=cv,
-                            classifiers=["linear"],
-                            study_id="cedara",
-                            plot_2d_space=False,
-                            export_fig_as_pdf=False,
-                            pre_visu=False,
-                            skip=False,
-                            n_job=n_job,
-                            export_hpc_string=export_hpc_string,
-                            enable_regularisation=enable_regularisation,
-                            weather_file=Path("weather_data/cedara_south_africa_2011-01-01_to_2015-12-31.csv"
-                            )
-                        )
-
     if exp_main:
         print("experiment 1: main pipeline")
         class_unhealthy_label = "2To2"
@@ -151,32 +82,6 @@ def main(
         cv = "RepeatedKFold"
         i_day = 7
         a_day = 7
-        # main_experiment.main(
-        #     output_dir=output_dir
-        #     / "main_experiment"
-        #     / clf
-        #     / delmas_dir_mrnn.stem
-        #     / f"{delmas_dir_mrnn.stem}_{farm_id}_{cv}_{i_day}_{a_day}_{slug}"
-        #     / class_unhealthy_label,
-        #     dataset_folder=delmas_dir_mrnn,
-        #     preprocessing_steps=steps,
-        #     n_imputed_days=i_day,
-        #     n_activity_days=a_day,
-        #     cv=cv,
-        #     classifiers=[clf],
-        #     class_unhealthy_label=[
-        #         class_unhealthy_label
-        #     ],
-        #     study_id=farm_id,
-        #     plot_2d_space=plot_2d_space,
-        #     pre_visu=False,
-        #     export_hpc_string=export_hpc_string,
-        #     skip=False,
-        #     enable_regularisation=enable_regularisation,
-        #     n_job=n_job,
-        # )
-
-        cv = "LeaveTwoOut"
         main_experiment.main(
             output_dir=output_dir
             / "main_experiment"
@@ -202,7 +107,33 @@ def main(
             n_job=n_job,
         )
 
-        exit()
+        cv = "LeaveTwoOut"
+        clf = "linear"
+        main_experiment.main(
+            output_dir=output_dir
+            / "main_experiment"
+            / clf
+            / delmas_dir_mrnn.stem
+            / f"{delmas_dir_mrnn.stem}_{farm_id}_{cv}_{i_day}_{a_day}_{slug}"
+            / class_unhealthy_label,
+            dataset_folder=delmas_dir_mrnn,
+            preprocessing_steps=steps,
+            n_imputed_days=i_day,
+            n_activity_days=a_day,
+            cv=cv,
+            classifiers=[clf],
+            class_unhealthy_label=[
+                class_unhealthy_label
+            ],
+            study_id=farm_id,
+            plot_2d_space=plot_2d_space,
+            pre_visu=False,
+            export_hpc_string=export_hpc_string,
+            skip=False,
+            enable_regularisation=enable_regularisation,
+            n_job=n_job,
+        )
+
 
         clf = "linear"
         farm_id = "cedara"
@@ -297,6 +228,75 @@ def main(
             n_job=n_job,
         )
 
+    if weather_exp:
+        print("experiment 1 (weather): main pipeline")
+
+        steps_list = [
+            # ["WINDSPEED", "STDS"],
+            # ["QN", "ANSCOMBE", "LOG", "WINDSPEED", "STDS"],
+            # ["HUMIDITY", "STDS"],
+            # ["QN", "ANSCOMBE", "LOG", "HUMIDITY", "STDS"],
+            # ["TEMPERATURE", "STDS"],
+            # ["QN", "ANSCOMBE", "LOG", "TEMPERATURE", "STDS"],
+            ["RAINFALL", "STDS"],
+            ["QN", "ANSCOMBE", "LOG", "RAINFALLAPPEND", "STDS"],
+            ["QN", "ANSCOMBE", "LOG"]
+        ]
+        for steps in steps_list:
+            slug = "_".join(steps)
+            for w_day in [84]:
+                for cv in ["RepeatedKFold"]:
+                        n_imputed_days = 7
+                        n_activity_days = 7
+                        main_experiment.main(
+                            output_dir=output_dir
+                            / "weather_experiment"
+                            / f"delmas_{cv}_{n_imputed_days}_{n_activity_days}_{w_day}_{slug}"
+                            / "2To2",
+                            dataset_folder=delmas_dir_mrnn,
+                            preprocessing_steps=steps,
+                            n_imputed_days=n_imputed_days, #need this for preprocessing wont be used for the weather
+                            n_activity_days=n_activity_days,
+                            n_weather_days=w_day,
+                            cv=cv,
+                            classifiers=["rbf"],
+                            class_unhealthy_label=["2To2"],
+                            study_id="delmas",
+                            export_fig_as_pdf=False,
+                            plot_2d_space=False,
+                            pre_visu=False,
+                            skip=True,
+                            enable_regularisation=enable_regularisation,
+                            n_job=n_job,
+                            weather_file=Path("weather_data/delmas_south_africa_2011-01-01_to_2015-12-31.csv")
+                        )
+                        n_imputed_days = 7
+                        n_activity_days = 7
+                        main_experiment.main(
+                            output_dir=output_dir
+                            / "weather_experiment"
+                            / f"cedara_{cv}_{0}_{0}_{w_day}_{slug}"
+                            / "2To2",
+                            dataset_folder=cedara_dir_mrnn,
+                            preprocessing_steps=steps,
+                            n_imputed_days=n_imputed_days,
+                            n_activity_days=n_activity_days,
+                            n_weather_days=w_day,
+                            class_unhealthy_label=["2To2"],
+                            cv=cv,
+                            classifiers=["linear"],
+                            study_id="cedara",
+                            plot_2d_space=False,
+                            export_fig_as_pdf=False,
+                            pre_visu=False,
+                            skip=True,
+                            n_job=n_job,
+                            export_hpc_string=export_hpc_string,
+                            enable_regularisation=enable_regularisation,
+                            weather_file=Path("weather_data/cedara_south_africa_2011-01-01_to_2015-12-31.csv"
+                            )
+                        )
+
     if exp_temporal:
         print("experiment 2: temporal validation")
         i = 7
@@ -308,7 +308,8 @@ def main(
             / "2To2",
             dataset_folder=delmas_dir_mrnn,
             n_imputed_days=i,
-            n_activity_days=n_a
+            n_activity_days=n_a,
+            plot_2d_space=plot_2d_space
         )
 
         # i = 7

@@ -21,6 +21,15 @@ from preprocessing.preprocessing import apply_preprocessing_steps
 from scipy.stats import mannwhitneyu
 import scipy
 
+from matplotlib import rcParams
+# Set matplotlib to use Times New Roman
+rcParams['font.family'] = 'serif'
+rcParams['font.serif'] = ['Times New Roman']
+
+import plotly.express as px
+import plotly.io as pio
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
 def report_mannwhitney(array1, array2):
     p_value = scipy.stats.wilcoxon(array1, array2, alternative='less').pvalue
@@ -289,27 +298,80 @@ def get_imp_stat(
     fig_.savefig(filepath)
 
     # dot plot
-    plt.clf()
-    plt.cla()
+    # plt.clf()
+    # plt.cla()
+    # df_ = pd.DataFrame({"Daytime": days_median, "Nighttime": nights_median})
+    # fig_box = df_.boxplot().get_figure()
+    # ax = fig_box.gca()
+    # p_value = report_mannwhitney(days_median, nights_median)
+    # ax.set_title(
+    #     f"Feature importance Day vs Night\np={p_value:.8f}"
+    # )
+    # ax.set_ylabel("Mean of feature importance")
+    # for i, d in enumerate(df_):
+    #     y = df_[d]
+    #     x = np.random.normal(i + 1, 0.04, len(y))
+    #     ax.plot(x, y, marker="o", linestyle="None", mfc="none")
+    # steps = "_".join(preprocessing_steps).lower()
+    # filename = f"{farmname}_{n_activity_days}_box_day_night_{X_train.shape[1]}_{steps}_{str(p_value).replace('.','_')}.png"
+    # filepath = output_dir / filename
+    # print(filepath)
+    # fig_box.set_size_inches(4, 4)
+    # fig_box.tight_layout()
+    # fig_box.savefig(filepath, dpi=500)
+
+    # Create DataFrame
     df_ = pd.DataFrame({"Daytime": days_median, "Nighttime": nights_median})
-    fig_box = df_.boxplot().get_figure()
-    ax = fig_box.gca()
+
+    # Calculate p-value
     p_value = report_mannwhitney(days_median, nights_median)
-    ax.set_title(
-        f"Feature importance Day vs Night\np={p_value:.8f}"
+
+    # Create box plot using go.Box
+    fig = make_subplots()
+
+    #colors = ['#1f77b4', '#ff7f0e']
+    for i, col in enumerate(df_.columns):
+        fig.add_trace(
+            go.Box(
+                y=df_[col],
+                name=col,
+                boxpoints="all",
+                jitter=0.9,  # Adjust the jitter value to control the spread
+                pointpos=0,
+                marker=dict(size=10, outliercolor="red"),
+                line_width=1,
+                showlegend=False
+            )
+        )
+
+    # Update layout
+    fig.update_layout(
+        #title=f"Feature importance Day vs Night\np={p_value:.8f}",
+        yaxis_title="Mean of feature importance",
     )
-    ax.set_ylabel("Mean of feature importance")
-    for i, d in enumerate(df_):
-        y = df_[d]
-        x = np.random.normal(i + 1, 0.04, len(y))
-        ax.plot(x, y, marker="o", linestyle="None", mfc="none")
+
+    fig.update_layout(
+        showlegend=True,
+        font={'family': "Times New Roman", 'size': 32, 'color': "black"},
+    )
+
+    fig.update_xaxes(titlefont={'size': 32}, tickfont={'size': 32}, tickangle=45)
+    fig.update_yaxes(titlefont={'size': 32}, tickfont={'size': 32})
+
+    # Generate filename and filepath
     steps = "_".join(preprocessing_steps).lower()
-    filename = f"{farmname}_{n_activity_days}_box_day_night_{X_train.shape[1]}_{steps}_{str(p_value).replace('.','_')}.png"
-    filepath = output_dir / filename
+    filename = f"{farmname}_{n_activity_days}_box_day_night_{X_train.shape[1]}_{steps}_{str(p_value).replace('.', '_')}.png"
+    filepath = Path(output_dir) / filename
     print(filepath)
-    fig_box.set_size_inches(4, 4)
-    fig_box.tight_layout()
-    fig_box.savefig(filepath)
+
+    width_in_pixels = 700
+    height_in_pixels = 930 * 1.1
+
+    fig.write_image(str(filepath), width=width_in_pixels, height=height_in_pixels, scale=2)
+    pdf_filepath = str(filepath).replace(".png", ".pdf")
+    print(pdf_filepath)
+    pio.write_image(fig, pdf_filepath, format="pdf", width=width_in_pixels, height=height_in_pixels)
+
 
     dates = np.array([x.time() for x in date_list])
     m1 = np.array([1 if x >= sunrise_max and x < sunset_min else 0 for x in dates])
@@ -339,14 +401,16 @@ def get_imp_stat(
     min = [np.min(day_imp), np.min(night_imp)]
     index = ["Daytime", "Nighttime"]
     df = pd.DataFrame({"Std": std, "Mean": mean, "Median": median}, index=index)
-    fig_ = df.plot.barh(rot=0, title="Feature importance", figsize=(8, 8)).get_figure()
+    fig_ = df.plot.barh(rot=0, title="Feature importance").get_figure()
     ax = fig_.gca()
     ax.set_xlabel("Feature importance")
     filename = f"{farmname}_{n_activity_days}_day_night_{X_train.shape[1]}_{steps}.png"
     filepath = output_dir / filename
     print(filepath)
     fig_.tight_layout()
-    fig_.savefig(filepath)
+    fig_.set_size_inches(6, 6)
+    fig_.tight_layout()
+    fig_.savefig(filepath, dpi=500)
 
 
 def main(
@@ -550,7 +614,7 @@ def main(
 
         r = int(np.ceil(d_m / _size))
 
-        fig, axs = plt.subplots(_size, 4, facecolor="white", figsize=(42.80, 12.80))
+        fig, axs = plt.subplots(_size, 4, facecolor="white")
         cpt = 0
         min_a = []
         max_a = []
@@ -634,8 +698,8 @@ def main(
                 vmax=mat_max,
             )
             axs[cpt, 3].set_title(f"Element wise mean of cwt coefficients unhealthy")
-            axs[cpt, 3].set_xlabel("Time")
-            axs[cpt, 3].set_ylabel("Scales")
+            axs[cpt, 3].set_xlabel("Time", fontsize=22)
+            axs[cpt, 3].set_ylabel("Scales", fontsize=22)
             fig.colorbar(im, ax=axs[cpt, 3])
             cpt += 1
 
@@ -643,9 +707,10 @@ def main(
             f"{n_activity_days}_{transform}_{r}_distance_from_db_{X_train.shape[1]}.png"
         )
         filepath = output_dir / filename
-        fig.tight_layout()
         print(filepath)
-        fig.savefig(filepath)
+        fig.set_size_inches(8, 4)
+        fig.tight_layout()
+        fig.savefig(filepath, dpi=500)
 
         intercept = clf.intercept_
         mean_time = np.mean(X_train, axis=0)
@@ -653,44 +718,32 @@ def main(
 
         date_list = list(range(0, len(mean_time)))
 
-        if farmname != 'cats':
-            date_list = [
-                datetime(2016, 9, 1, 0) + timedelta(minutes=1 * x)
-                for x in range(0, len(mean_time))
-            ]
+        date_list = [
+            datetime(2016, 9, 1, 0) + timedelta(minutes=1 * x)
+            for x in range(0, len(mean_time))
+        ]
 
-            get_imp_stat(
-                farmname,
-                preprocessing_steps,
-                date_list,
-                imp,
-                mean_time_o,
-                n_activity_days,
-                X_train,
-                output_dir,
-                sunrise_max,
-                sunset_min,
-                sunrise_min,
-                sunset_max,
-            )
-        else:
-            get_imp_stat_cat(
-                farmname,
-                preprocessing_steps,
-                date_list,
-                imp,
-                mean_time_o,
-                X_train,
-                output_dir,
-                n_peaks=n_peaks
-            )
+        get_imp_stat(
+            farmname,
+            preprocessing_steps,
+            date_list,
+            imp,
+            mean_time_o,
+            n_activity_days,
+            X_train,
+            output_dir,
+            sunrise_max,
+            sunset_min,
+            sunrise_min,
+            sunset_max,
+        )
 
-        fig, ax = plt.subplots(figsize=(width, height))
+        fig, ax = plt.subplots()
         ax2 = ax.twinx()
         ax.plot(
             date_list,
             mean_time,
-            label=f"mean activity of all samples({class_healthy_label}, {class_unhealthy_label}) after {preprocessing_steps}",
+            label=f"Mean activity of all samples",
         )
         # ax.plot(date_list, mean_time_o, label=f"mean activity of all samples({class_healthy_label}, {class_unhealthy_label}) after {['QN', 'ANSCOMBE', 'LOG']}")
         # ax.plot(imp*mean, label="mean activity of all samples * feature importance")
@@ -711,54 +764,45 @@ def main(
             date_list,
             roll_avg,
             color="black",
-            label=f"feature importance rolling avg ({r_avg} points)",
+            label=f"Feature importance rolling avg ({r_avg} pts)",
             alpha=0.9,
         )
 
-        if farmname != 'cats':
-            # ax.axvline(sunrise_max, color="r", ls="--")
-            # ax.axvline(sunset_min, color="r", ls="--")
-            #
-            # ax.axvline(sunrise_min, color="b", ls="--")
-            # ax.axvline(sunset_max, color="b", ls="--")
-            for item in date_list:
-                if (
-                    item.hour == sunrise_max.hour and item.minute == sunrise_max.minute
-                ) or (item.hour == sunset_min.hour and item.minute == sunset_min.minute):
-                    ax.axvline(item, color="r", ls="--")
+        for item in date_list:
+            if (
+                item.hour == sunrise_max.hour and item.minute == sunrise_max.minute
+            ) or (item.hour == sunset_min.hour and item.minute == sunset_min.minute):
+                ax.axvline(item, color="r", ls="--")
 
-                if (item.hour == sunrise_min.hour and item.minute == sunrise_min.minute) or (
-                    item.hour == sunset_max.hour and item.minute == sunset_max.minute
-                ):
-                    ax.axvline(item, color="b", ls="--")
-            # ax2.axvline(date_list[720], color='r', ls='--')
-        else:
-            for item in date_list:
-                if item % 240 == 0:
-                    if item == 0:
-                        continue
-                    ax.axvline(item, color="r", ls="--")
+            if (item.hour == sunrise_min.hour and item.minute == sunrise_min.minute) or (
+                item.hour == sunset_max.hour and item.minute == sunset_max.minute
+            ):
+                ax.axvline(item, color="b", ls="--")
+        ax.legend(loc="upper left", fontsize=14)
+        ax2.legend(loc="upper right", fontsize=14)
+        # ax.set_title(
+        #     f"Feature importance {type(clf).__name__} w={n_activity_days} \n daytime(max:{sunrise_max},min:{sunset_min}) nightime(max:{sunset_max},min:{sunrise_min})"
+        # )
+        ax.tick_params(axis='x', labelsize=18)  # Adjust the fontsize as needed for the x-axis
+        ax.tick_params(axis='y', labelsize=18)
+        ax.set_xlabel("Time", fontsize=22)
+        ax.set_ylabel("Activity", fontsize=22)
+        ax2.set_ylabel("Abs(Coefficients)", fontsize=22)
 
-        ax.legend(loc="upper left")
-        ax2.legend(loc="upper right")
-        ax.set_title(
-            f"Feature importance {type(clf).__name__} w={n_activity_days} \n daytime(max:{sunrise_max},min:{sunset_min}) nightime(max:{sunset_max},min:{sunrise_min})"
-        )
-        ax.set_xlabel("Time")
-        ax.set_ylabel("Activity")
-        ax2.set_ylabel("abs(Coefficients)", color="red")
         filename = f"{n_activity_days}_feature_importance_{X_train.shape[1]}.png"
         filepath = output_dir / filename
         print(filepath)
+        T = 60 * 1
+        ax2.xaxis.set_major_formatter(mdates.DateFormatter("%dT%H"))
+        #ax2.xaxis.set_major_locator(mdates.MinuteLocator(interval=T * n_activity_days))
+        ax.xaxis.set_major_formatter(mdates.DateFormatter("%dT%H"))
+        #ax.xaxis.set_major_locator(mdates.MinuteLocator(interval=T * n_activity_days))
+        fig.autofmt_xdate()
 
-        if farmname != 'cats':
-            T = 60 * 1
-            ax2.xaxis.set_major_formatter(mdates.DateFormatter("%dT%H"))
-            #ax2.xaxis.set_major_locator(mdates.MinuteLocator(interval=T * n_activity_days))
-            ax.xaxis.set_major_formatter(mdates.DateFormatter("%dT%H"))
-            #ax.xaxis.set_major_locator(mdates.MinuteLocator(interval=T * n_activity_days))
-            fig.autofmt_xdate()
-        fig.savefig(filepath)
+        fig.set_size_inches(11, 4)
+        fig.tight_layout()
+        fig.savefig(filepath, dpi=500)
+
 
         if transform == "dwt":
             f_transform = DWT(
@@ -842,7 +886,7 @@ def main(
         ax2.plot(
             roll_avg,
             color="black",
-            label=f"feature importance rolling avg ({1000} points)",
+            label=f"Feature importance rolling avg ({1000} pts)",
             alpha=0.9,
         )
 
@@ -857,7 +901,9 @@ def main(
         )
         filepath = output_dir / filename
         print(filepath)
-        fig.savefig(filepath)
+        fig.set_size_inches(6, 9)
+        fig.tight_layout()
+        fig.savefig(filepath, dpi=500)
 
         cwt_0 = X_train[y_train == 0]
         cwt_1 = X_train[y_train == 1]
@@ -1376,5 +1422,5 @@ def process(output_dir):
 
 if __name__ == "__main__":
     # typer.run(main)
-    process(Path("output")/"interpretation")
+    process(Path("output_debug")/"interpretation")
 

@@ -184,7 +184,7 @@ def main(
         output_qn_graph: Output Quotient Normalisation steps figures.
         n_job: Number of threads to use for cross validation.
     """
-
+    skip = True
     if export_hpc_string:
         build_hpc_string(
             study_id,

@@ -41,7 +41,8 @@ def main(
     train_size: float = 0.9,
     n_fold: int = 50,
     sample_date_filter: str = None,
-    export_fig_as_pdf:bool = False
+    export_fig_as_pdf:bool = False,
+    plot_2d_space:bool = True,
 ):
     """This script train a ml model(SVM) on the dataset first half time period and test on the second half\n
     Args:\n
@@ -159,8 +160,8 @@ def main(
         # process_clf_(preprocessing_steps, X1, y1, model_path, output_dir / "pre_trained" / f"{p1_start}{p1_end}_{p2_start}{p2_end}".replace("/", ""))
         # process_clf_(preprocessing_steps, X2, y2, model_path, output_dir / "pre_trained" / f"{p2_start}{p2_end}_{p1_start}{p1_end}".replace("/", ""))
 
-        process_clf(n_activity_days, train_size, label_series, label_series, info, preprocessing_steps, n_fold, X1, X2, y1, y2, output_dir / f"{p1_start}_{p2_start}".replace("/", ""))
-        process_clf(n_activity_days, train_size, label_series, label_series, info, preprocessing_steps, n_fold, X2, X1, y2, y1, output_dir / f"{p2_start}_{p1_start}".replace("/", ""))
+        process_clf(n_activity_days, train_size, label_series, label_series, info, preprocessing_steps, n_fold, X1, X2, y1, y2, output_dir / f"{p1_start}_{p2_start}".replace("/", ""), plot_2d_space=plot_2d_space)
+        process_clf(n_activity_days, train_size, label_series, label_series, info, preprocessing_steps, n_fold, X2, X1, y2, y1, output_dir / f"{p2_start}_{p1_start}".replace("/", ""), plot_2d_space=plot_2d_space)
 
 
 if __name__ == "__main__":

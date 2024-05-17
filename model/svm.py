@@ -523,8 +523,10 @@ def process_ml(
         class_unhealthy_label,
     )
     plot_ml_report_final(output_dir.parent.parent)
-    plot_ml_report_final_abs(output_dir.parent.parent)
-
+    try:
+        plot_ml_report_final_abs(output_dir.parent.parent)
+    except Exception as e:
+        print(e)
 
 
 def fold_worker(
@@ -1118,7 +1120,8 @@ def cross_validate_svm_fast(
             # std_auc = np.std(aucs)
             lo, hi = mean_confidence_interval(aucs_test)
 
-            label = f"Median ROC Test (Median AUC = {np.median(aucs_test):.2f}, 95% CI [{lo:.4f}, {hi:.4f}] )"
+            # label = f"Median ROC Test (Median AUC = {np.median(aucs_test):.2f}, 95% CI [{lo:.4f}, {hi:.4f}] )"
+            label = f"Testing Median AUC = {np.median(aucs_test)*100:.1f}({lo:.2f}, {hi:.2f})"
             # if len(aucs_test) <= 2:
             #     label = r"Mean ROC (Median AUC = %0.2f)" % np.median(aucs_test)
             ax_roc_merge.plot(mean_fpr_test, mean_tpr_test, label=label, lw=2, alpha=1, color="black")
@@ -1131,7 +1134,8 @@ def cross_validate_svm_fast(
             # std_auc = np.std(aucs)
             lo, hi = mean_confidence_interval(aucs_train)
 
-            label = f"Median ROC Training (Median AUC = {np.median(aucs_train):.2f}, 95% CI [{lo:.4f}, {hi:.4f}] )"
+            #label = f"Median ROC Training (Median AUC = {np.median(aucs_train):.2f}, 95% CI [{lo:.4f}, {hi:.4f}] )"
+            label = f"Training Median AUC = {np.median(aucs_train)*100:.1f}({lo:.2f}, {hi:.2f})"
             # if len(aucs_train) <= 2:
             #     label = r"Mean ROC (Median AUC = %0.2f)" % np.median(aucs_train)
             ax_roc_merge.plot(
@@ -1141,10 +1145,10 @@ def cross_validate_svm_fast(
             ax_roc_merge.plot([0, 1], [0, 1], linestyle='--', lw=2, color='orange', label='Chance', alpha=1)
             ax_roc_merge.set_xlim([-0.05, 1.05])
             ax_roc_merge.set_ylim([-0.05, 1.05])
-            ax_roc_merge.set_xlabel('False Positive Rate')
-            ax_roc_merge.set_ylabel('True Positive Rate')
+            ax_roc_merge.set_xlabel('False Positive Rate', fontsize=22)
+            ax_roc_merge.set_ylabel('True Positive Rate', fontsize=22)
             #ax_roc_merge.set_title('Receiver operating characteristic')
-            ax_roc_merge.legend(loc="lower right")
+            ax_roc_merge.legend(loc="lower right", fontsize=14)
             ax_roc_merge.grid()
             fig_roc.tight_layout()
             path = out_dir / "roc_curve" / cv_name
@@ -1154,6 +1158,10 @@ def cross_validate_svm_fast(
             print(final_path)
             fig_roc.set_size_inches(6, 6)
             fig_roc.tight_layout()
+
+            ax_roc_merge.tick_params(axis='x', labelsize=18)  # Adjust the fontsize as needed for the x-axis
+            ax_roc_merge.tick_params(axis='y', labelsize=18)
+
             fig_roc.savefig(final_path, dpi=500)
             # fig_roc.savefig(final_path)
 
@@ -1208,10 +1216,10 @@ def cross_validate_svm_fast(
             ax_roc_merge.plot([0, 1], [0, 1], linestyle='--', lw=2, color='k', label='Chance level', alpha=.8)
             ax_roc_merge.set_xlim([-0.05, 1.05])
             ax_roc_merge.set_ylim([-0.05, 1.05])
-            ax_roc_merge.set_xlabel('False Positive Rate')
-            ax_roc_merge.set_ylabel('True Positive Rate')
+            ax_roc_merge.set_xlabel('False Positive Rate', fontsize=22)
+            ax_roc_merge.set_ylabel('True Positive Rate', fontsize=22)
             #ax_roc_merge.set_title('Receiver operating characteristic')
-            ax_roc_merge.legend(loc="lower right")
+            ax_roc_merge.legend(loc="lower right", fontsize=14)
             ax_roc_merge.grid()
             fig_roc.tight_layout()
             path = out_dir / "roc_curve" / cv_name
@@ -1314,12 +1322,12 @@ def loo_roc(clf, X, y, out_dir, cv_name, classifier_name, animal_ids, cv, days):
     )
     ax.set_xlim([-0.05, 1.05])
     ax.set_ylim([-0.05, 1.05])
-    ax.set_xlabel("False Positive Rate")
-    ax.set_ylabel("True Positive Rate")
+    ax.set_xlabel("False Positive Rate", fontsize=22)
+    ax.set_ylabel("True Positive Rate", fontsize=22)
     ax.set_title(
         "Receiver operating characteristic LOOCV (at sample level) days=%d" % days
     )
-    ax.legend(loc="lower right")
+    ax.legend(loc="lower right", fontsize=14)
     ax.grid()
     path = out_dir / "roc_curve" / cv_name
     final_path = path / f"roc_{classifier_name}.png"
@@ -1340,7 +1348,7 @@ def loo_roc(clf, X, y, out_dir, cv_name, classifier_name, animal_ids, cv, days):
     ax.set_xlabel("Recall")
     ax.set_ylabel("Precision")
     ax.set_title("Precision Recall LOOCV (at sample level)")
-    ax.legend(loc="lower right")
+    ax.legend(loc="lower right", fontsize=14)
     ax.grid()
     path = out_dir / "pr_curve" / cv_name
     final_path = path / f"pr_{classifier_name}.png"
@@ -1361,7 +1369,7 @@ def make_y_hist(data0, data1, out_dir, cv_name, steps, auc, info="", tag=""):
         "Histograms of prediction probabilities (ROC Mean AUC = %0.2f)\n %s"
         % (auc, info)
     )
-    plt.legend(loc="upper right")
+    plt.legend(loc="upper right", fontsize=14)
     filename = "%s/%s_overlapping_histograms_y_%s_%s.png" % (
         out_dir,
         tag,

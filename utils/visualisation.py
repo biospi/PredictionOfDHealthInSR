@@ -40,6 +40,7 @@ from highdimensional.decisionboundaryplot import DBPlot
 from natsort import natsorted
 import plotly.express as px
 import scipy
+import plotly.io as pio
 
 from matplotlib import rcParams
 # Set matplotlib to use Times New Roman
@@ -1350,19 +1351,21 @@ def plot_roc_range(
     # std_auc = np.std(aucs)
     lo, hi = mean_confidence_interval(aucs_test)
 
-    label = f"Median ROC Test (Median AUC = {np.nanmedian(aucs_test):.2f}, 95% CI [{lo:.4f}, {hi:.4f}] )"
+    label = f"Testing Median AUC = {np.nanmedian(aucs_test)*100:.1f}%({lo:.2f}, {hi:.2f})"
     if len(aucs_test) <= 2:
         label = r"Mean ROC (Median AUC = %0.2f)" % np.nanmedian(aucs_test)
     ax[1].plot(mean_fpr_test, mean_tpr_test, color="black", label=label, lw=2, alpha=1)
 
-    ax[1].set(
-        xlim=[-0.05, 1.05],
-        ylim=[-0.05, 1.05],
-        title=f"(Testing data) Receiver operating characteristic days:{days} cv:{cv_name} \n info:{info}",
-    )
-    ax[1].set_xlabel("False positive rate")
-    ax[1].set_ylabel("True positive rate")
-    ax[1].legend(loc="lower right")
+    # ax[1].set(
+    #     xlim=[-0.05, 1.05],
+    #     ylim=[-0.05, 1.05],
+    #     title=f"(Testing data) Receiver operating characteristic days:{days} cv:{cv_name} \n info:{info}",
+    # )
+    ax[1].tick_params(axis='x', labelsize=18)  # Adjust the fontsize as needed for the x-axis
+    ax[1].tick_params(axis='y', labelsize=18)
+    ax[1].set_xlabel("False positive rate", fontsize=22)
+    ax[1].set_ylabel("True positive rate", fontsize=22)
+    ax[1].legend(loc="lower right", fontsize=14)
 
     ax_roc_merge.plot(
         mean_fpr_test, mean_tpr_test, color="black", label=label, lw=2, alpha=1
@@ -1372,9 +1375,11 @@ def plot_roc_range(
     #     ylim=[-0.05, 1.05],
     #     title=f"(Training/Testing data) Receiver operating characteristic days:{days} cv:{cv_name} \n info:{info}",
     # )
-    ax_roc_merge.set_xlabel("False positive rate")
-    ax_roc_merge.set_ylabel("True positive rate")
-    ax_roc_merge.legend(loc="lower right")
+    ax_roc_merge.tick_params(axis='x', labelsize=18)  # Adjust the fontsize as needed for the x-axis
+    ax_roc_merge.tick_params(axis='y', labelsize=18)
+    ax_roc_merge.set_xlabel("False positive rate", fontsize=22)
+    ax_roc_merge.set_ylabel("True positive rate", fontsize=22)
+    ax_roc_merge.legend(loc="lower right", fontsize=14)
     # fig.show()
 
     mean_tpr_train = np.nanmean(tprs_train, axis=0)
@@ -1383,21 +1388,23 @@ def plot_roc_range(
     # std_auc = np.std(aucs)
     lo, hi = mean_confidence_interval(aucs_train)
 
-    label = f"Median ROC Training (Median AUC = {np.nanmedian(aucs_train):.2f}, 95% CI [{lo:.4f}, {hi:.4f}] )"
+    label = f"Training Median AUC = {np.nanmedian(aucs_train)*100:.1f}%({lo:.2f}, {hi:.2f})"
     if len(aucs_train) <= 2:
         label = r"Median ROC (Median AUC = %0.2f)" % np.nanmedian(aucs_train)
     ax[0].plot(
         mean_fpr_train, mean_tpr_train, color="black", label=label, lw=2, alpha=1
     )
 
-    ax[0].set(
-        xlim=[-0.05, 1.05],
-        ylim=[-0.05, 1.05],
-        title=f"(Training data) Receiver operating characteristic days:{days} cv:{cv_name} \n info:{info}",
-    )
-    ax[0].set_xlabel("False positive rate")
-    ax[0].set_ylabel("True positive rate")
-    ax[0].legend(loc="lower right")
+    # ax[0].set(
+    #     xlim=[-0.05, 1.05],
+    #     ylim=[-0.05, 1.05],
+    #     title=f"(Training data) Receiver operating characteristic days:{days} cv:{cv_name} \n info:{info}",
+    # )
+    ax[0].tick_params(axis='x', labelsize=18)  # Adjust the fontsize as needed for the x-axis
+    ax[0].tick_params(axis='y', labelsize=18)
+    ax[0].set_xlabel("False positive rate", fontsize=22)
+    ax[0].set_ylabel("True positive rate", fontsize=22)
+    ax[0].legend(loc="lower right", fontsize=14)
 
     ax_roc_merge.plot(
         mean_fpr_train, mean_tpr_train, color="red", label=label, lw=2, alpha=1
@@ -1407,7 +1414,7 @@ def plot_roc_range(
     #     ylim=[-0.05, 1.05],
     #     title=f"(Training data) Receiver operating characteristic days:{days} cv:{cv_name} \n info:{info}",
     # )
-    ax_roc_merge.legend(loc="lower right")
+    ax_roc_merge.legend(loc="lower right", fontsize=14)
 
     fig.tight_layout()
     path = out_dir / "roc_curve" / cv_name
@@ -2124,7 +2131,8 @@ def plot_high_dimension_db(
         print(filepath)
         # fig.tight_layout()
         fig.set_size_inches(7, 7)
-        fig.tight_layout()
+        #fig.tight_layout()
+        fig.tight_layout(rect=[0, 0, 0.85, 1])
         fig.savefig(
             filepath,
             bbox_inches="tight",
@@ -3316,17 +3324,15 @@ def plot_ml_report_final_abs(output_dir):
                 formated_label.append(label_formated)
                 formated_label_s.append(human_readable(label_formated, df_f_, n))
             simple_labels = []
+            lab = ''
             for fl in formated_label:
-                if "QN_ANSCOMBE_LOG_RAINFALLAPPEND_STDS" in fl:
-                    simple_labels.append("Activity and rainfall")
-                    continue
-                if "QN_ANSCOMBE_LOG" in fl:
-                    simple_labels.append("Activity")
-                    continue
                 if "RAINFALL_STDS" in fl:
-                    simple_labels.append("Rainfall")
-                    continue
-
+                    lab = "Rainfall"
+                if "QN_ANSCOMBE_LOG" in fl:
+                    lab = "Activity"
+                if "QN_ANSCOMBE_LOG_RAINFALLAPPEND_STDS" in fl:
+                    lab = "Activity and rainfall"
+                simple_labels.append(lab)
 
             df_f_["config"] = simple_labels
             df_f_["config_s"] = simple_labels
@@ -3372,13 +3378,14 @@ def plot_ml_report_final_abs(output_dir):
             # fig_auc_only.write_html(str(filepath))
             # fig.show()
 
-            preproc = df_f_["config_s"].str.split(" ").str[-1].unique()
+            # preproc = df_f_["config_s"].str.split(" ").str[-1].unique()
+            preproc = df_f_["config_s"].unique()
             mapping = dict(zip(preproc, range(len(preproc))))
 
             df_f_["config_s"] = (
                 df_f_["config_s"].str.split(" ").str[:].str.join(" ")
                 + " ("
-                + [str(mapping[x]) for x in df_f_["config_s"].str.split(" ").str[-1]]
+                + [str(mapping[x]) for x in df_f_["config_s"]]
                 + ")"
             )
 
@@ -3400,7 +3407,7 @@ def plot_ml_report_final_abs(output_dir):
                 class0 = df_f_[df_f_["config_s"] == xd]["class0"].unique()
                 class1 = df_f_[df_f_["config_s"] == xd]["class1"].unique()
                 imp_days = df_f_[df_f_["config_s"] == xd]["class1"].unique()
-                xd = " ".join(xd.split(" ")[0:1])
+                #xd = " ".join(xd.split(" ")[0:1])
                 class0_list.append(class0)
                 class1_list.append(class1)
                 keys = np.unique(color_data)
@@ -3457,7 +3464,7 @@ def plot_ml_report_final_abs(output_dir):
                             boxpoints="all",
                             jitter=0.9,  # Adjust the jitter value to control the spread
                             pointpos=0,
-                            marker=dict(color=color, size=5, outliercolor="red"),
+                            marker=dict(color=color, size=10, outliercolor="red"),
                             legendgroup=c,
                             line_width=1 if float(i_d) < 0 else float(i_d) * 0.5,
                             showlegend=False,
@@ -3465,7 +3472,6 @@ def plot_ml_report_final_abs(output_dir):
                     ]
                 )
                 sec_axis.append(True)
-
 
             for k, c in enumerate(np.unique(color_data)):
                 try:
@@ -3538,100 +3544,75 @@ def plot_ml_report_final_abs(output_dir):
             h_labels = "1To1"
             uh_labels = "2To2"
 
-            fig_ = make_subplots(specs=[[{"secondary_y": True}]])
+            fig_ = make_subplots()
 
             traces.sort(key=lambda x: x[0])
             for a, t in zip(sec_axis, traces):
-                fig_.add_trace(t[1], secondary_y=a)
+                if t[1].type != "box":
+                    continue
+                fig_.add_trace(t[1])
 
             fig_.update_yaxes(showgrid=True, gridwidth=1, automargin=True)
             fig_.update_layout(
-                title=f"healthy labels={h_labels} unhealthy labels={uh_labels}",
+                # title=f"healthy labels={h_labels} unhealthy labels={uh_labels}",
                 yaxis_title="AUC",
             )
             fig_.update_xaxes(tickangle=45)
 
-            x_tick_labels = x_data
-
-            #todo remove
-            # custom_tick_vals = np.arange(len(x_data))
-            # custom_tick_text = []
-            # for v in x_data:
-            #     new_label = ''
-            #     steps = v.split(' ')[-2]
-            #     if steps == "TEMPERATURE_STDS":
-            #         new_label = "Temperature"
-            #     if steps == "QN_ANSCOMBE_LOG_WINDSPEED_STDS":
-            #         new_label = "Activity and Wind speed"
-            #     if steps == "RAINFALL_STDS":
-            #         new_label = "Rainfall"
-            #     if steps == "QN_ANSCOMBE_LOG":
-            #         new_label = "Activity"
-            #     if steps == "QN_ANSCOMBE_LOG_TEMPERATURE_STDS":
-            #         new_label = "Activity and Temperature"
-            #     if steps == "QN_ANSCOMBE_LOG_HUMIDITY_STDS":
-            #         new_label = "Activity and Humidity"
-            #     if steps == "WINDSPEED_STDS":
-            #         new_label = "Wind speed"
-            #     if steps == "HUMIDITY_STDS":
-            #         new_label = "Humidity"
-            #     if steps == "QN_ANSCOMBE_LOG_RAINFALLAPPEND_STDS":
-            #         new_label = "Activity and Rainfall"
-            #     custom_tick_text.append(new_label)
-            # # Update x-axis tick labels
-            # fig_.update_xaxes(tickvals=custom_tick_vals, ticktext=custom_tick_text)
-            #
-            # # Rename legend item names
-            # for i, trace in enumerate(fig_['data']):
-            #     print(trace['name'])
-            #     new_name = trace['name']\
-            #         .replace('QN_ANSCOMBE_LOG_RAINFALLAPPEND_STDS', 'Activity and Rainfall')\
-            #         .replace('QN_ANSCOMBE_LOG', 'Activity') \
-            #         .replace('RAINFALL_STDS', 'Rainfall') \
-            #         .replace('QN_ANSCOMBE_LOG_WINDSPEED_STDS', 'Activity and Wind speed') \
-            #         .replace('WINDSPEED_STDS', 'Wind speed') \
-            #         .replace('QN_ANSCOMBE_LOG_TEMPERATURE_STDS', 'Activity and Temperature') \
-            #         .replace('TEMPERATURE_STDS', 'Temperature') \
-            #         .replace('QN_ANSCOMBE_LOG_HUMIDITY_STDS', 'Activity and Humidity') \
-            #         .replace('HUMIDITY_STDS', 'Humidity')
-            #     trace['name'] = new_name
-
-            # custom_tick_text = custom_tick_text + ["Label 1", "Label 2"]  # Provide labels for each trace
-            # fig_.update_traces(name=custom_tick_text)
-
             filepath = output_dir / f"ML_performance_final_auc_{farm}_{h_tag}_delta.html"
             print(filepath)
             fig_.update_layout(barmode="group")
-            fig_.update_yaxes(title_text="Delta AUC(%)", secondary_y=True)
-            fig_.update_yaxes(title_text="Sample count", secondary_y=False)
+            fig_.update_yaxes(title_text="Delta AUC(%)")
+            #fig_.update_yaxes(title_text="Sample count", secondary_y=False)
             fig_.update_xaxes(range=[-1, len(x_data) - 0.5])
             fig_.update_layout(
-                title='Best Model AUC Comparison',
-                xaxis_title="Model",
-                yaxis_title="AUC(Delta)",
-                xaxis={'tickangle': 45},  # Rotate labels for better readability
+                # title='Best Model AUC Comparison',
+                xaxis_title="Model(s)",
+                # yaxis_title="Number of samples",
                 showlegend=True,
-                font=dict(family="Times New Roman", size=12, color="black")
+                font={'family': "Times New Roman", 'size': 32, 'color': "black"},
             )
+
+            fig_.update_xaxes(titlefont={'size': 32}, tickfont={'size': 32}, tickangle=45)
+            fig_.update_yaxes(titlefont={'size': 32}, tickfont={'size': 32})
+
+            fig_.update_layout(
+                legend={
+                    'font': {'size': 28},  # Adjust the font size for the legend text
+                    'orientation': 'h',  # Horizontal orientation
+                    'x': 0.5,  # Center the legend horizontally
+                    'xanchor': 'center',  # Anchor point at the center of the legend
+                    'y': 1.04,  # Position the legend above the top of the figure
+                    'yanchor': 'bottom',  # Anchor point at the bottom of the legend
+                }
+            )
+
             fig_.write_html(str(filepath))
             # Set size and DPI for the PNG export
             width_in_inches = 6
             height_in_inches = 7
-            dpi = 500
+            dpi = 1
 
             # Convert inches to pixels
-            width_in_pixels = width_in_inches * dpi
-            height_in_pixels = height_in_inches * dpi
+            width_in_pixels = 700
+            height_in_pixels = 930*1.1
 
             # Define the file path for the PNG
             png_filepath = str(output_dir / 'best_vs_others.png')
 
             # Export as PNG
-            fig.write_image(png_filepath, width=width_in_pixels, height=height_in_pixels, scale=1)
+            print(png_filepath)
+            fig_.write_image(png_filepath, width=width_in_pixels, height=height_in_pixels, scale=2)
+
+            # Define the file path for the PDF
+            pdf_filepath = str(output_dir / 'best_vs_others.pdf')
+            # Export as PDF
+            print(pdf_filepath)
+            pio.write_image(fig_, pdf_filepath, format="pdf", width=width_in_pixels, height=height_in_pixels)
 
 
 if __name__ == "__main__":
-    plot_ml_report_final_abs(Path("../output_debug_1/main_experiment"))
+    plot_ml_report_final_abs(Path("../output_paper_pdf_20/weather_experiment"))
     # dir_path = "F:/Data2/job_debug/ml"
     # output_dir = "F:/Data2/job_debug/ml"
     # build_roc_mosaic(dir_path, output_dir)
