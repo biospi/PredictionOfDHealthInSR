@@ -6,12 +6,12 @@ from pathlib import Path
 
 
 def main(
-    exp_main: bool = False,
+    exp_main: bool = True,
     exp_temporal: bool = True,
     exp_cross_farm: bool = False,
-    weather_exp: bool = False,
+    weather_exp: bool = True,
     regularisation_exp: bool = False,
-    output_dir: Path = Path("output_paper_pdf_20"),
+    output_dir: Path = Path("output"),
     delmas_dir_mrnn: Path = Path("datasets/delmas_dataset4_mrnn_7day"),
     cedara_dir_mrnn: Path = Path("datasets/cedara_datasetmrnn7_23"),
     n_job: int = 5,
@@ -134,7 +134,6 @@ def main(
             n_job=n_job,
         )
 
-
         clf = "linear"
         farm_id = "cedara"
         cv = "RepeatedKFold"
@@ -246,7 +245,7 @@ def main(
             slug = "_".join(steps)
             for w_day in [84]:
                 for cv in ["RepeatedKFold"]:
-                        n_imputed_days = 7
+                        n_imputed_days = 6
                         n_activity_days = 7
                         main_experiment.main(
                             output_dir=output_dir
@@ -270,7 +269,7 @@ def main(
                             n_job=n_job,
                             weather_file=Path("weather_data/delmas_south_africa_2011-01-01_to_2015-12-31.csv")
                         )
-                        n_imputed_days = 7
+                        n_imputed_days = 6
                         n_activity_days = 7
                         main_experiment.main(
                             output_dir=output_dir

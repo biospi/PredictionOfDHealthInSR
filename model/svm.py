@@ -695,7 +695,7 @@ def fold_worker(
     print("auc train=", auc_value_train)
     aucs_roc_train.append(auc_value_train)
 
-    if plot_2d_space and ifold == 0:
+    if plot_2d_space and ifold <= 2:
         model = clf
         if hasattr(clf, "best_estimator_"):
             model = clf.best_estimator_
@@ -897,32 +897,32 @@ def cross_validate_svm_fast(
         X: samples
         y: targets
     """
-    if plot_2d_space:
-        for kernel in svc_kernel:
-            try:
-                if C is None or gamma is None:
-                    clf = SVC(kernel=kernel, probability=True)
-                else:
-                    clf = SVC(kernel=kernel, probability=True, C=C, gamma=gamma)
-                X_ = X[np.isin(y_h, [0, 1])]
-                y_ = y_h[np.isin(y_h, [0, 1])]
-                meta_ = meta_data_short[np.isin(y_h, [0, 1])]
-                clf.fit(X_, y_)
-                plot_high_dimension_db(
-                    out_dir / "training",
-                    X_,
-                    y_,
-                    None,
-                    meta_,
-                    clf,
-                    days,
-                    steps,
-                    0,
-                    export_fig_as_pdf
-                )
-                plot_learning_curves(clf, X_, y_, 0, out_dir / "training")
-            except Exception as e:
-                print(e)
+    # if plot_2d_space:
+    #     for kernel in svc_kernel:
+    #         try:
+    #             if C is None or gamma is None:
+    #                 clf = SVC(kernel=kernel, probability=True)
+    #             else:
+    #                 clf = SVC(kernel=kernel, probability=True, C=C, gamma=gamma)
+    #             X_ = X[np.isin(y_h, [0, 1])]
+    #             y_ = y_h[np.isin(y_h, [0, 1])]
+    #             meta_ = meta_data_short[np.isin(y_h, [0, 1])]
+    #             clf.fit(X_, y_)
+    #             plot_high_dimension_db(
+    #                 out_dir / "training",
+    #                 X_,
+    #                 y_,
+    #                 None,
+    #                 meta_,
+    #                 clf,
+    #                 days,
+    #                 steps,
+    #                 0,
+    #                 export_fig_as_pdf
+    #             )
+    #             plot_learning_curves(clf, X_, y_, 0, out_dir / "training")
+    #         except Exception as e:
+    #             print(e)
 
     scores, scores_proba = {}, {}
 
@@ -1559,7 +1559,7 @@ def process_clf(
         print(filename)
         df.to_csv(filename)
 
-        if plot_2d_space and i == 0:
+        if plot_2d_space and i <= 2:
             model = clf
             if hasattr(clf, "best_estimator_"):
                 model = clf.best_estimator_

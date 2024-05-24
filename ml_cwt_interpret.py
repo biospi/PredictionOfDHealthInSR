@@ -364,8 +364,8 @@ def get_imp_stat(
     filepath = Path(output_dir) / filename
     print(filepath)
 
-    width_in_pixels = 700
-    height_in_pixels = 930 * 1.1
+    width_in_pixels = 400
+    height_in_pixels = 700
 
     fig.write_image(str(filepath), width=width_in_pixels, height=height_in_pixels, scale=2)
     pdf_filepath = str(filepath).replace(".png", ".pdf")
@@ -785,17 +785,17 @@ def main(
         # )
         ax.tick_params(axis='x', labelsize=18)  # Adjust the fontsize as needed for the x-axis
         ax.tick_params(axis='y', labelsize=18)
-        ax.set_xlabel("Time", fontsize=22)
-        ax.set_ylabel("Activity", fontsize=22)
-        ax2.set_ylabel("Abs(Coefficients)", fontsize=22)
+        ax.set_xlabel("Time", fontsize=18)
+        ax.set_ylabel("Activity", fontsize=18)
+        ax2.set_ylabel("Abs(Coefficients)", fontsize=18)
 
         filename = f"{n_activity_days}_feature_importance_{X_train.shape[1]}.png"
         filepath = output_dir / filename
         print(filepath)
         T = 60 * 1
-        ax2.xaxis.set_major_formatter(mdates.DateFormatter("%dT%H"))
+        ax2.xaxis.set_major_formatter(mdates.DateFormatter("Day %d"))
         #ax2.xaxis.set_major_locator(mdates.MinuteLocator(interval=T * n_activity_days))
-        ax.xaxis.set_major_formatter(mdates.DateFormatter("%dT%H"))
+        ax.xaxis.set_major_formatter(mdates.DateFormatter("Day %d"))
         #ax.xaxis.set_major_locator(mdates.MinuteLocator(interval=T * n_activity_days))
         fig.autofmt_xdate()
 
