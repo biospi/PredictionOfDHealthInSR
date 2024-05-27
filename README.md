@@ -101,6 +101,8 @@ make environment
 
 ### Citation
 
+[Article](https://www.biorxiv.org/content/10.1101/2020.08.03.234203v4)
+
 Consider citing ours and Miguel's works in your own research if this repository has been useful:
 ```
 @article {Montout2020.08.03.234203,
