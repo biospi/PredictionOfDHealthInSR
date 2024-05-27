@@ -106,15 +106,14 @@ make environment
 Consider citing our work in your own research if this repository has been useful:
 ```
 @article {Montout2020.08.03.234203,
-	author = {Axel X. Montout and Ranjeet S. Bhamber and Debbie S. Lange and Doreen Z. Ndlovu and Eric R. Morgan and Christos C. Ioannou and Thomas H. Terrill and Jan A. van Wyk and Tilo Burghardt and Andrew W. Dowsey},
+	author = {Montout, Axel X. and Bhamber, Ranjeet S. and Lange, Debbie S. and Ndlovu, Doreen Z. and Morgan, Eric R. and Ioannou, Christos C. and Terrill, Thomas H. and van Wyk, Jan A. and Burghardt, Tilo and Dowsey, Andrew W.},
 	title = {Early prediction of declining health in small ruminants with accelerometers and machine learning},
 	elocation-id = {2020.08.03.234203},
-	year = {2023},
+	year = {2024},
 	doi = {10.1101/2020.08.03.234203},
 	publisher = {Cold Spring Harbor Laboratory},
-	URL = {https://www.biorxiv.org/content/early/2023/04/21/2020.08.03.234203},
-	eprint = {https://www.biorxiv.org/content/early/2023/04/21/2020.08.03.234203.full.pdf},
+	URL = {https://www.biorxiv.org/content/early/2024/05/24/2020.08.03.234203},
+	eprint = {https://www.biorxiv.org/content/early/2024/05/24/2020.08.03.234203.full.pdf},
 	journal = {bioRxiv}
 }
-
 ```
