@@ -103,7 +103,7 @@ make environment
 
 [Article](https://www.biorxiv.org/content/10.1101/2020.08.03.234203v4)
 
-Consider citing ours and Miguel's works in your own research if this repository has been useful:
+Consider citing our work in your own research if this repository has been useful:
 ```
 @article {Montout2020.08.03.234203,
 	author = {Axel X. Montout and Ranjeet S. Bhamber and Debbie S. Lange and Doreen Z. Ndlovu and Eric R. Morgan and Christos C. Ioannou and Thomas H. Terrill and Jan A. van Wyk and Tilo Burghardt and Andrew W. Dowsey},
